@@ -1,14 +1,13 @@
 require('dotenv').config();
-const express = require('express');
-const bodyParser = require('body-parser');
+import express from 'express';
+import bodyParser from 'body-parser';
+//Routes
+import userRoutes from './routes/userRoutes';
 const app = express();
 const port = process.env.DEV_PORT;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-//Routes
-const userRoutes = require('./routes/userRoutes.js');
 
 //Using routes
 app.use('/users', userRoutes);
