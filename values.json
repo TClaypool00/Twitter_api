@@ -1,0 +1,35 @@
+{
+    "errors" : {
+        "maxLength" : " has max length of ",
+        "required" : " is a required field",
+        "email" : "Not a valid email address",
+        "phoneNumber" : "Not a valid phone number"
+    },
+    "maxLengths" : {
+        "stringMaxLength" : 255,
+        "phoenNum" : 10
+    },
+    "user" : {
+        "username" : "Username",
+        "firstName" : "First name",
+        "lastName" : "Last name",
+        "email" : "Email",
+        "password" : "Password",
+        "phoneNum" : "Phone number",
+        "confirmPassword" : "Confirm password",
+        "okMessages" : {
+            "created": "user has been created!"
+        },
+        "errors" : {
+            "emailExists": "Email address already exists",
+            "phoneNumberExists": "Phone number already exists",
+            "usernameExists": "Username already exists"
+        }
+    },
+    "password" : {
+        "errors" : {
+            "passwordsNotMatch" : "Passwords do not match",
+            "invalidPassword" : "Password does not meet our requirements"
+        }
+    }
+}
