@@ -10,6 +10,7 @@
         "phoenNum" : 10
     },
     "user" : {
+        "userId": "User id",
         "username" : "Username",
         "firstName" : "First name",
         "lastName" : "Last name",
@@ -22,14 +23,35 @@
         },
         "errors" : {
             "emailExists": "Email address already exists",
+            "emailDoesNotExists" : "Eamil address does not exist",
             "phoneNumberExists": "Phone number already exists",
             "usernameExists": "Username already exists"
+        }
+    },
+    "tweet" : {
+        "tweetText": "Tweet text",
+        "okMessages" : {
+            "created": "Tweet has been posted!"
+        },
+        "errors" : {
+            "cteatedError": "Could not publish tweet"
         }
     },
     "password" : {
         "errors" : {
             "passwordsNotMatch" : "Passwords do not match",
-            "invalidPassword" : "Password does not meet our requirements"
+            "invalidPassword" : "Password does not meet our requirements",
+            "incorrectPasssword": "Incorrect password"
         }
+    },
+    "jwt" : {
+        "expireTimeLimit" : "15m",
+        "noToken": "No token found",
+        "authorizationHeader": "authorization",
+        "unauthorized" : "You do not have access to this resource",
+        "bearerValue" : "Bearer "
+    },
+    "router" : {
+        "defaultMessage" : "Listening..."
     }
 }

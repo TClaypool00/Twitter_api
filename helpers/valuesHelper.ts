@@ -14,6 +14,7 @@ const maxLengthsObject = {
 }
 
 const userValuesObject = {
+    userIdField: values.user.userId,
     usernameField: values.user.username,
     firstNameField: values.user.firstName,
     lastNameField: values.user.lastName,
@@ -24,12 +25,32 @@ const userValuesObject = {
     createdOKMessage: values.user.okMessages.created,
     emailExistsMessage: values.user.errors.emailExists,
     phoneNumberExistsMessage: values.user.errors.phoneNumberExists,
-    usernameExistsMessage: values.user.errors.usernameExists
+    usernameExistsMessage: values.user.errors.usernameExists,
+    emailDoesNotExistsMessage: values.user.errors.emailDoesNotExists
 }
 
 const passwordValuesObject = {
     passwordsNotMatchMessage: values.password.errors.passwordsNotMatch,
-    invalidPasswordMessage: values.password.errors.invalidPassword
+    invalidPasswordMessage: values.password.errors.invalidPassword,
+    incorrectPassswordMessage: values.password.errors.incorrectPasssword
+}
+
+const jwtValuesObject = {
+    expiresTimeLimt: values.jwt.expireTimeLimit,
+    noTokenMessage: values.jwt.noToken,
+    authorizationHeader: values.jwt.authorizationHeader,
+    unauthorizedMessage: values.jwt.unauthorized,
+    bearerValue: values.jwt.bearerValue
+}
+
+const tweetValuesObject = {
+    tweetTextField: values.tweet.tweetText,
+    createdOKMessage: values.tweet.okMessages.created,
+    created500ErrorMessage: values.tweet.errors.cteatedError
+}
+
+const routerValuesObject = {
+    defaultMessage: values.router.defaultMessage
 }
 
 export function requiredValue(name : string) : string {
@@ -44,5 +65,8 @@ export {
     errorsObject,
     maxLengthsObject,
     userValuesObject,
-    passwordValuesObject
+    passwordValuesObject,
+    jwtValuesObject,
+    routerValuesObject,
+    tweetValuesObject
 }
