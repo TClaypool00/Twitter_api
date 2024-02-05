@@ -15,6 +15,7 @@ export default class User {
     //#endregion
 
     //#region Public Fields
+    public userId : number = 0;
     public userName : string | undefined | null;
     public firstName : string | undefined | null;
     public lastName : string | undefined | null;
@@ -54,6 +55,25 @@ export default class User {
         this.passwordMatches();
         this.validateEmail();
     }
+
+    public validateLoginInfo() {
+        if (requiredIsNull(this.password)) {
+            this.errors.push(requiredValue(this.passwordField));
+        }
+
+        this.validateEmail();
+    }
+
+    public getUser(userObject: any) : void {
+        this.userId = userObject.user_id;
+        this.userName = userObject.username;
+        this.firstName = userObject.first_name;
+        this.lastName = userObject.last_name;
+        this.email = userObject.email;
+        this.phoneNumber = userObject.phone_number;
+        this.password = userObject.password;
+        
+    }
     //#endregion
 
     //#region  Private Fields
@@ -78,10 +98,6 @@ export default class User {
 
         if (requiredIsNull(this.phoneNumber)) {
             this.errors.push(requiredValue(this.phoneNumberField));
-        }
-
-        if (requiredIsNull(this.password)) {
-            this.errors.push(requiredValue(this.passwordField));
         }
 
         if (typeof this.userName === 'string' && valueExceedsLength(this.userName, this.maxLength)) {
