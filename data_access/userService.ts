@@ -1,6 +1,6 @@
-import { MysqlError } from 'mysql';
 import connect from '../database/database';
 import User from '../models/User';
+import { getJSONObject } from '../helpers/jsonHelper';
 const connection = connect();
 
 //#region Database methods
@@ -38,8 +38,12 @@ export async function phoneNumberExists(phoneNumber : string, userId: number | n
     return Boolean(jsonObject[0][0].phone_number_exists);
 }
 
-function getJSONObject(jsonObject: any) : any {
-    let JSONValue = JSON.stringify(jsonObject);
+export async function getUserByEmail(email: string) : Promise<any> {
+    const user = await connection.query('call get_single_user_by_email(?)', [email]);
 
-    return JSON.parse(JSONValue);
+    let jsonObject = getJSONObject(user);
+
+    return jsonObject[0][0][0];
 }
+
+
