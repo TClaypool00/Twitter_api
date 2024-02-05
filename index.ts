@@ -3,6 +3,9 @@ import express from 'express';
 import bodyParser from 'body-parser';
 //Routes
 import userRoutes from './routes/userRoutes';
+import tweetRoutes from './routes/tweetRoutes';
+import { routerValuesObject } from './helpers/valuesHelper';
+
 const app = express();
 const port = process.env.DEV_PORT;
 
@@ -11,7 +14,8 @@ app.use(bodyParser.json());
 
 //Using routes
 app.use('/users', userRoutes);
+app.use('/tweets', tweetRoutes);
 
 app.listen(port, () => {
-    console.log(`Listening to ${port}`);
+    console.log(routerValuesObject.defaultMessage);
 });
