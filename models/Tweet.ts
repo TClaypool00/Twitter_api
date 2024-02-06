@@ -12,6 +12,11 @@ export default class Tweet {
     public tweetText: string | undefined | null;
     public createDate : Date;
     public createDateString: string;
+    public updateDate: Date | null;
+    public datePublished: Date | null;
+    public datePublishedString: string;
+    public updateDateString : string;
+    public isEdited: boolean;
     public userId : number | undefined | null;
     public userFirstName: string;
     public userLastName: string;
@@ -28,24 +33,49 @@ export default class Tweet {
         this.userDisplayName = '';
         this.createDateString = '';
         this.createDate = new Date();
+        this.updateDate = null;
+        this.updateDateString = '';
+        this.isEdited = false;
+        this.datePublished = null;
+        this.datePublishedString = '';
 
         this.errors.splice(0, 1);
     }
     //#endregion
 
     //#region  Public Methods
-    public create(respbody: any) : void {
-        this.tweetText = respbody.tweetText;
-        this.userId = respbody.userId;
+    public create(reqBody: any) : void {
+        this.tweetText = reqBody.tweetText;
+        this.userId = reqBody.userId;
 
         this.validateCreateData();
+    }
 
+    public update(req: any): void {
+        this.tweetId = req.params.id;
+
+        if (requiredNumberIsNull(this.tweetId)) {
+            this.errors.push('');
+        }
+
+        this.create(req.body);
     }
 
     public setDate(date: any) : void {
         this.createDate = new Date(String(date));
         this.createDateString = this.createDate.toLocaleDateString();
 
+        this.datePublished = this.createDate;
+        this.datePublishedString = this.createDateString;
+    }
+
+    public setUpdate(date: any) : void {
+        this.updateDate = new Date(String(date));
+        this.updateDateString = this.createDate.toLocaleDateString();
+        this.isEdited = true;
+
+        this.datePublished = this.updateDate;
+        this.datePublishedString = this.updateDateString;
     }
 
     public setUserName(userId: number, firstName: string, lastName: string) {

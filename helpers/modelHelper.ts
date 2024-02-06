@@ -25,13 +25,14 @@ export function userObject(user: any, token: string = '', refreshToken: string =
     }
 }
 
-export function tweetObject(tweet: Tweet) {
+export function tweetObject(tweet: Tweet, status: string = '') {
     return {
         tweetId: tweet.tweetId,
         tweetText: tweet.tweetText,
-        createDate: tweet.createDateString,
+        datePublished: tweet.datePublishedString,
+        isEdited: tweet.isEdited,
         userId: tweet.userId,
         userDisplay: tweet.userDisplayName,
-        status: tweetValuesObject.createdOKMessage
+        status: status
     }
 }

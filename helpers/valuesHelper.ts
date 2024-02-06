@@ -6,6 +6,7 @@ const errorsObject = {
     requiredError: values.errors.required,
     invalidEmailError : values.errors.email,
     invalidPhoneNumberError : values.errors.phoneNumber,
+    idGreaterThanZeroMessage: values.errors.idGreaterThanZero
 }
 
 const maxLengthsObject = {
@@ -39,14 +40,16 @@ const jwtValuesObject = {
     expiresTimeLimt: values.jwt.expireTimeLimit,
     noTokenMessage: values.jwt.noToken,
     authorizationHeader: values.jwt.authorizationHeader,
-    unauthorizedMessage: values.jwt.unauthorized,
-    bearerValue: values.jwt.bearerValue
+    unauthorizedMessage: values.jwt.unauthorized
 }
 
 const tweetValuesObject = {
+    tweetIdField: values.tweet.tweetId,
     tweetTextField: values.tweet.tweetText,
     createdOKMessage: values.tweet.okMessages.created,
-    created500ErrorMessage: values.tweet.errors.cteatedError
+    updatedOKMessage: values.tweet.okMessages.updated,
+    created500ErrorMessage: values.tweet.errors.cteatedError,
+    tweetNotFoundMessage: values.tweet.errors.tweetNotFound
 }
 
 const routerValuesObject = {

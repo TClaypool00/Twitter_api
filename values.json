@@ -3,7 +3,8 @@
         "maxLength" : " has max length of ",
         "required" : " is a required field",
         "email" : "Not a valid email address",
-        "phoneNumber" : "Not a valid phone number"
+        "phoneNumber" : "Not a valid phone number",
+        "idGreaterThanZero": " must be greater than zero"
     },
     "maxLengths" : {
         "stringMaxLength" : 255,
@@ -29,12 +30,15 @@
         }
     },
     "tweet" : {
+        "tweetId": "Tweet Id",
         "tweetText": "Tweet text",
         "okMessages" : {
-            "created": "Tweet has been posted!"
+            "created": "Tweet has been posted!",
+            "updated": "Tweet has been updated!"
         },
         "errors" : {
-            "cteatedError": "Could not publish tweet"
+            "cteatedError": "Could not publish tweet",
+            "tweetNotFound": "The tweet either does not exist or you do not have access"
         }
     },
     "password" : {
@@ -45,11 +49,10 @@
         }
     },
     "jwt" : {
-        "expireTimeLimit" : "15m",
+        "expireTimeLimit" : "1h",
         "noToken": "No token found",
         "authorizationHeader": "authorization",
-        "unauthorized" : "You do not have access to this resource",
-        "bearerValue" : "Bearer "
+        "unauthorized" : "You do not have access to this resource"
     },
     "router" : {
         "defaultMessage" : "Listening..."
