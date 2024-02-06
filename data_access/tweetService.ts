@@ -26,11 +26,21 @@ export async function updateTweet(tweet: Tweet) : Promise<Tweet> {
     return tweet;
 }
 
-export async function tweetExists(tweetId: number, userId: number) : Promise<Boolean> {
+export async function tweetExists(tweetId: number, userId: number | null = null) : Promise<Boolean> {
     let [exists] = await connection.query('call tweet_exists(?, ?)', [tweetId, userId]);
 
     let jsonObject = getJSONObject(exists);
     jsonObject = jsonObject[0][0];
 
     return Boolean(jsonObject.tweet_exists);
+}
+
+export async function getTweetById(tweet: Tweet) : Promise<Tweet> {
+    let [dataTweet] = await connection.query('call get_tweet_by_id(?)', [tweet.tweetId]);
+    let jsonObject = getJSONObject(dataTweet);
+    jsonObject = jsonObject[0][0];
+
+    tweet.setData(jsonObject);
+
+    return tweet;
 }

@@ -3,7 +3,7 @@ import { authenticateToken, currentUser, validateUserId } from '../helpers/jwtHe
 import Tweet from '../models/Tweet';
 import { getStatus } from '../helpers/globalFunctions';
 import { jwtValuesObject, tweetValuesObject } from '../helpers/valuesHelper';
-import { insertTweet, tweetExists, updateTweet } from '../data_access/tweetService';
+import { getTweetById, insertTweet, tweetExists, updateTweet } from '../data_access/tweetService';
 import { tweetObject } from '../helpers/modelHelper';
 const router = express.Router();
 
@@ -73,6 +73,34 @@ router.put('/:id', authenticateToken, async (req, resp) => {
 
         resp.status(200)
         .json(tweetObject(tweet, tweetValuesObject.updatedOKMessage));
+    } catch (error: any) {
+        resp.status(500)
+        .json(getStatus(error));
+    }
+});
+
+router.get('/:id', authenticateToken, async (req, resp) => {
+    try {
+        let tweet = new Tweet();
+        tweet.get(req);
+
+        if (tweet.errors.length > 0) {
+            resp.status(400)
+            .json(getStatus(tweet.errors));
+        }
+
+        if (!await tweetExists(Number(tweet.tweetId))) {
+            resp.status(404)
+            .json(getStatus(tweetValuesObject.tweetNotFoundMessage));
+
+            return;
+        }
+
+        tweet = await getTweetById(tweet);
+
+        resp.status(200)
+        .json(tweetObject(tweet));
+
     } catch (error: any) {
         resp.status(500)
         .json(getStatus(error));

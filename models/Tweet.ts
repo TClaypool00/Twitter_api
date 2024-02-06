@@ -52,13 +52,17 @@ export default class Tweet {
     }
 
     public update(req: any): void {
+        this.get(req);
+
+        this.create(req.body);
+    }
+
+    public get(req: any) : void {
         this.tweetId = req.params.id;
 
         if (requiredNumberIsNull(this.tweetId)) {
-            this.errors.push('');
+            this.errors.push(errorsObject.idGreaterThanZeroMessage);
         }
-
-        this.create(req.body);
     }
 
     public setDate(date: any) : void {
@@ -82,6 +86,29 @@ export default class Tweet {
         this.userId = userId;
         this.userFirstName = firstName;
         this.userLastName = lastName;
+        this.setDisplayName();
+    }
+
+    public setData(data: any) {
+        this.tweetText = data.tweet_text;
+        this.createDate = new Date(String(data.create_date));
+        this.createDateString = this.createDate.toLocaleDateString();
+        this.isEdited = this.updateDate !== null;
+        this.userId = data.user_id;
+        this.userFirstName = data.first_name;
+        this.userLastName = data.last_name;
+        this.setDisplayName();
+
+        if (this.updateDate === null) {
+            this.datePublishedString = this.createDateString;
+        } else {
+            this.updateDate = new Date(String(data.update_date));
+            this.updateDateString = this.updateDate.toLocaleDateString();
+            this.datePublishedString = this.updateDateString;
+        }
+    }
+
+    public setDisplayName(): void {
         this.userDisplayName = `${this.userFirstName} ${this.userLastName.charAt(0)}.`;
     }
     //#endregion

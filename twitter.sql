@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 06, 2024 at 02:45 AM
+-- Generation Time: Feb 06, 2024 at 04:26 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -38,6 +38,11 @@ END$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_single_user_by_email` (IN `email` VARCHAR(255))   SELECT * FROM users u
 WHERE LOWER(u.email) = LOWER(email)
 LIMIT 1$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_tweet_by_id` (IN `tweet_id` INT)   BEGIN
+	SELECT * FROM vw_tweet t WHERE t.tweet_id = tweet_id
+    LIMIT 1;
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet` (IN `tweet_text` VARCHAR(255), IN `user_id` INT)   BEGIN
 	DECLARE tweet_id INT;

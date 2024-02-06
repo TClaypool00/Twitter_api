@@ -27,7 +27,7 @@ export function userObject(user: any, token: string = '', refreshToken: string =
 
 export function tweetObject(tweet: Tweet, status: string = '') {
     return {
-        tweetId: tweet.tweetId,
+        tweetId: Number(tweet.tweetId),
         tweetText: tweet.tweetText,
         datePublished: tweet.datePublishedString,
         isEdited: tweet.isEdited,
