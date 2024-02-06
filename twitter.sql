@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 05, 2024 at 05:40 AM
+-- Generation Time: Feb 06, 2024 at 02:45 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -62,6 +62,23 @@ ELSE
 END IF;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `tweet_exists` (IN `tweet_id` INT, IN `user_id` INT)   BEGIN
+	IF user_id IS NULL THEN
+    	SELECT EXISTS(SELECT * FROM tweets t WHERE t.tweet_id = tweet_id) AS tweet_exists;
+    ELSE
+    	SELECT EXISTS(SELECT * FROM tweets t WHERE t.tweet_id = tweet_id AND t.user_id = user_id) AS tweet_exists;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_tweet` (IN `tweet_id` INT, IN `tweet_text` INT)   BEGIN
+	UPDATE tweets
+    SET tweet_text = tweet_text, update_date = CURRENT_DATE()
+    WHERE tweet_id = tweet_id;
+    
+    SELECT t.update_date FROM tweets t
+    WHERE t.tweet_id = tweet_id;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `username_exists` (IN `username` VARCHAR(255), IN `user_id` INT)   BEGIN
 IF user_id IS NULL THEN
 	SELECT EXISTS(SELECT * FROM users u WHERE u.username = username) AS username_exists;
@@ -97,6 +114,7 @@ CREATE TABLE IF NOT EXISTS `tweets` (
   `tweet_id` int(11) NOT NULL AUTO_INCREMENT,
   `tweet_text` varchar(255) NOT NULL,
   `create_date` date NOT NULL DEFAULT curdate(),
+  `update_date` date DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`tweet_id`),
   KEY `user_id` (`user_id`)
@@ -119,6 +137,31 @@ CREATE TABLE IF NOT EXISTS `users` (
   `date_created` date NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `vw_tweet`
+-- (See below for the actual view)
+--
+CREATE TABLE IF NOT EXISTS `vw_tweet` (
+`tweet_id` int(11)
+,`tweet_text` varchar(255)
+,`create_date` date
+,`update_date` date
+,`user_id` int(11)
+,`first_name` varchar(255)
+,`last_name` varchar(255)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vw_tweet`
+--
+DROP TABLE IF EXISTS `vw_tweet`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweet`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `u`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name` FROM (`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`))  ;
 
 --
 -- Constraints for dumped tables
