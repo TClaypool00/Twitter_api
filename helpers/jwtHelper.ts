@@ -100,8 +100,8 @@ export function verifyAccessToken(token: string, isRefreshToken: boolean = false
     }
 }
 
-export function validateUserId(formUserId: Number, reqUserId: any) : boolean {
-    return formUserId === reqUserId;
+export function validateUserId(formUserId: Number) : boolean {
+    return formUserId === currentUser.userId;
 }
 
 export {
