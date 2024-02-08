@@ -15,3 +15,9 @@ export function getError(error: any) : object {
         'error' : error
     }
 }
+
+export function isValidDate(dateString: any) : boolean {
+    let dateParsed = Date.parse(dateString);
+
+    return isNaN(dateString) && !isNaN(dateParsed);
+}
