@@ -1,12 +1,11 @@
 import Tweet from "../models/Tweet";
-import { tweetValuesObject } from "./valuesHelper";
 
 export function requiredIsNull(value : string | undefined | null) : boolean {
     return value === null || value === undefined || value === '';
 }
 
 export function requiredNumberIsNull(value: number | undefined | null) : boolean {
-    return value === null || value === undefined || value <= 0;
+    return value === null || value === undefined;
 }
 
 export function valueExceedsLength(value: string, length: number) : boolean {
