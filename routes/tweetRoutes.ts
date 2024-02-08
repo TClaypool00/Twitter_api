@@ -2,8 +2,8 @@ import express from 'express';
 import { authenticateToken, currentUser, validateUserId } from '../helpers/jwtHelper';
 import Tweet from '../models/Tweet';
 import { getStatus } from '../helpers/globalFunctions';
-import { jwtValuesObject, tweetValuesObject } from '../helpers/valuesHelper';
-import { getTweetById, insertTweet, tweetExists, updateTweet } from '../data_access/tweetService';
+import { jwtValuesObject, maxLenghValue, maxLengthsObject, tweetValuesObject } from '../helpers/valuesHelper';
+import { getTweetById, getTweets, insertTweet, tweetExists, updateTweet } from '../data_access/tweetService';
 import { tweetObject } from '../helpers/modelHelper';
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.post('/', authenticateToken, async (req, resp) => {
             return;
         }
 
-        if (!validateUserId(Number(tweet.userId), currentUser.userId)) {
+        if (!validateUserId(Number(tweet.userId))) {
             resp.status(403)
             .json(getStatus(jwtValuesObject.unauthorizedMessage));
 
@@ -60,7 +60,7 @@ router.put('/:id', authenticateToken, async (req, resp) => {
             return;
         }
 
-        if (!validateUserId(Number(tweet.userId), currentUser.userId)) {
+        if (!validateUserId(Number(tweet.userId))) {
             resp.status(403)
             .json(getStatus(jwtValuesObject.unauthorizedMessage));
 
@@ -101,6 +101,50 @@ router.get('/:id', authenticateToken, async (req, resp) => {
         resp.status(200)
         .json(tweetObject(tweet));
 
+    } catch (error: any) {
+        resp.status(500)
+        .json(getStatus(error));
+    }
+});
+
+router.get('/', authenticateToken, async (req, resp) => {
+    try {
+        let tweet : Tweet = new Tweet();
+        tweet.getAll(req.query);
+
+        if (tweet.errors.length > 0) {
+            resp.status(400)
+            .json(getStatus(tweet.errors));
+
+            return;
+        }
+
+        if (tweet.userId !== null && tweet.isEdited && !validateUserId(Number(tweet.userId))) {
+            resp.status(403)
+            .json(getStatus(jwtValuesObject.unauthorizedMessage));
+
+            return;
+        }
+
+        let tweets : Array<Tweet> = await getTweets(tweet, maxLengthsObject.standardTakeValue);
+
+        if (tweets.length === 0) {
+            resp.status(404)
+            .json(getStatus(tweetValuesObject.noTweetsMessage));
+
+            return;
+        }
+
+        let jsonTweets : [any] = [''];
+        jsonTweets.splice(0, 1);
+
+        for (let i = 0; i < tweets.length; i++) {
+            const tweet = tweets[i];
+            jsonTweets.push(tweetObject(tweet));
+        }
+
+        resp.status(200)
+        .json(getStatus(jsonTweets));
     } catch (error: any) {
         resp.status(500)
         .json(getStatus(error));

@@ -4,11 +4,15 @@
         "required" : " is a required field",
         "email" : "Not a valid email address",
         "phoneNumber" : "Not a valid phone number",
-        "idGreaterThanZero": " must be greater than zero"
+        "idGreaterThanZero": " must be greater than zero",
+        "date": " not a valid date",
+        "notBoolean": " must be a boolean type (true or false)",
+        "notNumber" : " must a whole number"
     },
     "maxLengths" : {
         "stringMaxLength" : 255,
-        "phoenNum" : 10
+        "phoenNum" : 10,
+        "standardTakeValue": 10
     },
     "user" : {
         "userId": "User id",
@@ -30,15 +34,19 @@
         }
     },
     "tweet" : {
-        "tweetId": "Tweet Id",
+        "tweetId": "Tweet id",
         "tweetText": "Tweet text",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "isEdited": "Is edited",
         "okMessages" : {
             "created": "Tweet has been posted!",
             "updated": "Tweet has been updated!"
         },
         "errors" : {
             "cteatedError": "Could not publish tweet",
-            "tweetNotFound": "The tweet either does not exist or you do not have access"
+            "tweetNotFound": "The tweet either does not exist or you do not have access",
+            "noTweets": "No tweets found"
         }
     },
     "password" : {
@@ -56,5 +64,8 @@
     },
     "router" : {
         "defaultMessage" : "Listening..."
+    },
+    "global" : {
+        "index" : "Index"
     }
 }

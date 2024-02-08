@@ -6,12 +6,16 @@ const errorsObject = {
     requiredError: values.errors.required,
     invalidEmailError : values.errors.email,
     invalidPhoneNumberError : values.errors.phoneNumber,
-    idGreaterThanZeroMessage: values.errors.idGreaterThanZero
+    idGreaterThanZeroMessage: values.errors.idGreaterThanZero,
+    dateMessage: values.errors.date,
+    notBooleanMessage : values.errors.notBoolean,
+    notNumberMessage: values.errors.notNumber
 }
 
 const maxLengthsObject = {
-    defaultStringMaxLength: values.maxLengths.stringMaxLength,
-    phoneNumberMaxLength: values.maxLengths.phoenNum
+    defaultStringMaxLength: Number(values.maxLengths.stringMaxLength),
+    phoneNumberMaxLength: Number(values.maxLengths.phoenNum),
+    standardTakeValue: Number(values.maxLengths.standardTakeValue)
 }
 
 const userValuesObject = {
@@ -46,14 +50,22 @@ const jwtValuesObject = {
 const tweetValuesObject = {
     tweetIdField: values.tweet.tweetId,
     tweetTextField: values.tweet.tweetText,
+    startDateField: String(values.tweet.startDate),
+    endDateField: String(values.tweet.endDate),
+    isEditedField: values.tweet.isEdited,
     createdOKMessage: values.tweet.okMessages.created,
     updatedOKMessage: values.tweet.okMessages.updated,
     created500ErrorMessage: values.tweet.errors.cteatedError,
-    tweetNotFoundMessage: values.tweet.errors.tweetNotFound
+    tweetNotFoundMessage: values.tweet.errors.tweetNotFound,
+    noTweetsMessage: values.tweet.errors.noTweets
 }
 
 const routerValuesObject = {
     defaultMessage: values.router.defaultMessage
+}
+
+const globalValuesObject = {
+    indexField: values.global.index
 }
 
 export function requiredValue(name : string) : string {
@@ -71,5 +83,6 @@ export {
     passwordValuesObject,
     jwtValuesObject,
     routerValuesObject,
-    tweetValuesObject
+    tweetValuesObject,
+    globalValuesObject
 }
