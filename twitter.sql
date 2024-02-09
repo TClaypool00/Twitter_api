@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2024 at 04:28 PM
+-- Generation Time: Feb 09, 2024 at 06:41 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -49,8 +49,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `get_single_user_by_email` (IN `emai
 WHERE LOWER(u.email) = LOWER(email)
 LIMIT 1$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_tweet_by_id` (IN `tweet_id` INT)   BEGIN
-	SELECT * FROM vw_tweets t WHERE t.tweet_id = tweet_id
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_tweet_by_id` (IN `tweet_id` INT, IN `user_id` INT)   BEGIN
+	SELECT t.*, EXISTS(SELECT * FROM likes l WHERE l.tweet_id = tweet_id AND l.user_id = user_id) AS liked FROM vw_tweets t WHERE t.tweet_id = tweet_id
     LIMIT 1;
 END$$
 
@@ -200,6 +200,7 @@ CREATE TABLE IF NOT EXISTS `vw_tweets` (
 ,`user_id` int(11)
 ,`first_name` varchar(255)
 ,`last_name` varchar(255)
+,`like_count` bigint(21)
 );
 
 -- --------------------------------------------------------
@@ -209,7 +210,7 @@ CREATE TABLE IF NOT EXISTS `vw_tweets` (
 --
 DROP TABLE IF EXISTS `vw_tweets`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `u`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name` FROM (`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`))  ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `t`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count` FROM ((`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`)) join `likes` `l` on(`l`.`tweet_id` = `t`.`tweet_id`))  ;
 
 --
 -- Constraints for dumped tables

@@ -59,7 +59,8 @@ const tweetValuesObject = {
     created500ErrorMessage: values.tweet.errors.cteatedError,
     deleted500ErrorMessage: values.tweet.errors.deletedError,
     tweetNotFoundMessage: values.tweet.errors.tweetNotFound,
-    noTweetsMessage: values.tweet.errors.noTweets
+    noTweetsMessage: values.tweet.errors.noTweets,
+    likedSql: values.tweet.sql.liked
 }
 
 const likeValuesObject = {

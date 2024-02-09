@@ -1,6 +1,8 @@
 import connect from "../database/database";
 import Tweet from '../models/Tweet';
 import { getJSONObject } from '../helpers/jsonHelper';
+import { tweetValuesObject } from "../helpers/valuesHelper";
+import { currentUser } from "../helpers/jwtHelper";
 const connection = connect();
 
 export async function insertTweet(tweet: Tweet) : Promise<Tweet> {
@@ -36,7 +38,7 @@ export async function tweetExists(tweetId: number, userId: number | null = null)
 }
 
 export async function getTweetById(tweet: Tweet) : Promise<Tweet> {
-    let [dataTweet] = await connection.query('call get_tweet_by_id(?)', [tweet.tweetId]);
+    let [dataTweet] = await connection.query('call get_tweet_by_id(?, ?)', [tweet.tweetId, tweet.userId]);
     let jsonObject = getJSONObject(dataTweet);
     jsonObject = jsonObject[0][0];
 
@@ -55,7 +57,17 @@ export async function getTweets(tweet:Tweet, limitValue: number) : Promise<Array
     let sqlParams : [any] = [''];
     sqlParams.splice(0, 1);
 
-    sql = 'SELECT * FROM vw_tweets t';
+    sql = 'SELECT t.*';
+    sql += tweetValuesObject.likedSql;
+    if (tweet.userId === null) {
+        sqlParams.push(currentUser.userId);
+    } else {
+        sqlParams.push(tweet.userId);
+    }
+
+
+    sql+= 'FROM vw_tweets t';
+
 
     if (tweet.tweetText !== null) {
         whereClause += `t.tweet_text LIKE ?`;

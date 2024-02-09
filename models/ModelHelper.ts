@@ -8,6 +8,8 @@ export default abstract class ModelHelper {
     public userId: number | undefined | null;
     public tweetId: number | undefined | null;
     public errors: [string] = [''];
+    public likeCount: number;
+    public liked: boolean;
    //#endregion
 
     //#region Protected Fields
@@ -23,6 +25,9 @@ export default abstract class ModelHelper {
         this.tweetIdField = tweetValuesObject.tweetIdField;
 
         this.index = null;
+        this.likeCount = 0;
+        this.liked = false;
+
         this.tweetId = null;
         this.userId = null;
         this.userIdField = '';

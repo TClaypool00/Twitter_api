@@ -49,6 +49,9 @@
             "tweetNotFound": "The tweet either does not exist or you do not have access",
             "noTweets": "No tweets found",
             "deletedError" : "Could not delete tweet"
+        },
+        "sql": {
+            "liked": ", EXISTS(SELECT * FROM likes l WHERE l.tweet_id = t.tweet_id AND l.user_id = ?) AS liked "
         }
     },
     "like" : {

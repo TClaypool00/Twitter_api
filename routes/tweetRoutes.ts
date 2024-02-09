@@ -83,6 +83,7 @@ router.get('/:id', authenticateToken, async (req, resp) => {
     try {
         let tweet = new Tweet();
         tweet.validateTweetId(req);
+        tweet.userId = currentUser.userId;
 
         if (tweet.errors.length > 0) {
             resp.status(400)
@@ -107,6 +108,8 @@ router.get('/:id', authenticateToken, async (req, resp) => {
     }
 });
 
+//TODO: sort by by like count
+//TODO: sort by liked
 router.get('/', authenticateToken, async (req, resp) => {
     try {
         let tweet : Tweet = new Tweet();

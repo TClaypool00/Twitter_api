@@ -164,6 +164,8 @@ export default class Tweet extends ModelHelper {
         this.userFirstName = data.first_name;
         this.userLastName = data.last_name;
         this.setDisplayName();
+        this.likeCount = data.like_count;
+        this.liked = Boolean(data.liked);
 
         if (this.updateDate === null) {
             this.datePublishedString = this.createDateString;

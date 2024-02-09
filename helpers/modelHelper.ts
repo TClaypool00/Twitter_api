@@ -32,6 +32,8 @@ export function tweetObject(tweet: Tweet, status: string = '') {
         isEdited: tweet.isEdited,
         userId: tweet.userId,
         userDisplay: tweet.userDisplayName,
+        likeCount: tweet.likeCount,
+        liked: tweet.liked,
         status: status
     }
 }
