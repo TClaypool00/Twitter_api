@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2024 at 02:01 AM
+-- Generation Time: Feb 09, 2024 at 02:21 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -45,7 +45,7 @@ WHERE LOWER(u.email) = LOWER(email)
 LIMIT 1$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_tweet_by_id` (IN `tweet_id` INT)   BEGIN
-	SELECT * FROM vw_tweet t WHERE t.tweet_id = tweet_id
+	SELECT * FROM vw_tweets t WHERE t.tweet_id = tweet_id
     LIMIT 1;
 END$$
 
@@ -151,10 +151,10 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `vw_tweet`
+-- Stand-in structure for view `vw_tweets`
 -- (See below for the actual view)
 --
-CREATE TABLE IF NOT EXISTS `vw_tweet` (
+CREATE TABLE IF NOT EXISTS `vw_tweets` (
 `tweet_id` int(11)
 ,`tweet_text` varchar(255)
 ,`create_date` date
@@ -167,11 +167,11 @@ CREATE TABLE IF NOT EXISTS `vw_tweet` (
 -- --------------------------------------------------------
 
 --
--- Structure for view `vw_tweet`
+-- Structure for view `vw_tweets`
 --
-DROP TABLE IF EXISTS `vw_tweet`;
+DROP TABLE IF EXISTS `vw_tweets`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweet`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `u`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name` FROM (`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`))  ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `u`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name` FROM (`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`))  ;
 
 --
 -- Constraints for dumped tables

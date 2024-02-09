@@ -55,7 +55,7 @@ export async function getTweets(tweet:Tweet, limitValue: number) : Promise<Array
     let sqlParams : [any] = [''];
     sqlParams.splice(0, 1);
 
-    sql = 'SELECT * FROM vw_tweet t';
+    sql = 'SELECT * FROM vw_tweets t';
 
     if (tweet.tweetText !== null) {
         whereClause += `t.tweet_text LIKE ?`;
