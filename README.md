@@ -39,4 +39,4 @@ REFRESH_KEY = 'Your secret key for refresh token'
 ### Usage
 In a terminal of some kind.
 1. Go the root directory.
-2. Type "nmp start"
+2. Type "npm start"
