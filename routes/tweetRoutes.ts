@@ -170,7 +170,7 @@ router.delete('/:id', authenticateToken, async (req, resp) => {
             .json(getStatus(tweetValuesObject.tweetNotFoundMessage));
         }
 
-        if (await deleteTweet(Number(tweet.tweetId)) === 1) {
+        if (await deleteTweet(Number(tweet.tweetId)) > 0) {
             resp.status(200)
             .json(getStatus(tweetValuesObject.deletedOKMessage));
         } else {

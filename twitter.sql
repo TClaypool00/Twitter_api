@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2024 at 06:41 PM
+-- Generation Time: Feb 09, 2024 at 07:57 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -33,8 +33,19 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_like` (IN `l_id` INT)   BEGI
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_tweet` (IN `id` INT)   BEGIN
-	DELETE FROM tweets
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    	ROLLBACK;
+    END;
+
+	START TRANSACTION;
+    DELETE FROM likes
     WHERE tweet_id = id;
+    
+    DELETE FROM tweets
+    WHERE tweet_id = id;
+    
+    COMMIT;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `email_existts` (IN `email` VARCHAR(255), IN `user_id` INT)   BEGIN
@@ -132,9 +143,11 @@ CREATE TABLE IF NOT EXISTS `likes` (
   `create_date` date NOT NULL DEFAULT curdate(),
   `user_id` int(11) NOT NULL,
   `tweet_id` int(11) DEFAULT NULL,
+  `comment_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`like_id`),
   KEY `user_id` (`user_id`),
-  KEY `tweet_id` (`tweet_id`)
+  KEY `tweet_id` (`tweet_id`),
+  KEY `comment_id` (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -221,7 +234,8 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 ALTER TABLE `likes`
   ADD CONSTRAINT `likes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`tweet_id`) REFERENCES `tweets` (`tweet_id`);
+  ADD CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`tweet_id`) REFERENCES `tweets` (`tweet_id`),
+  ADD CONSTRAINT `likes_ibfk_3` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`);
 
 --
 -- Constraints for table `refresh_tokens`
