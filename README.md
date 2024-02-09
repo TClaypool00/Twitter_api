@@ -6,7 +6,7 @@
 2. Follow the onscreen directions to install the program.
 3. Once it is installed, run the XAMPP application. (It is recommended that you are an administrator)
 
-### Creating the Facebook database
+### Creating the Twitter database
 1. Click the "Start" button beside "Apache" and "MySQL".
 2. Click the "Admin" button beside "MySQL", it will take you to the phpMyAdmin website.
 3. Click the "New" link  on the left sidebar
