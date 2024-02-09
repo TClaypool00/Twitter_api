@@ -72,12 +72,12 @@ export default class Tweet extends ModelHelper {
     }
 
     public update(req: any): void {
-        this.get(req);
+        this.validateTweetId(req);
 
         this.create(req.body);
     }
 
-    public get(req: any) : void {
+    public validateTweetId(req: any) : void {
         this.tweetId = req.params.id;
 
         if (requiredNumberIsNull(this.tweetId)) {

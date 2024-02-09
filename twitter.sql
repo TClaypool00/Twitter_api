@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 06, 2024 at 04:26 AM
+-- Generation Time: Feb 09, 2024 at 02:01 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -27,6 +27,11 @@ DELIMITER $$
 --
 -- Procedures
 --
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_tweet` (IN `id` INT)   BEGIN
+	DELETE FROM tweets
+    WHERE tweet_id = id;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `email_existts` (IN `email` VARCHAR(255), IN `user_id` INT)   BEGIN
 IF user_id IS NULL THEN
 	SELECT EXISTS(SELECT * FROM users u WHERE u.email = email) AS email_exists;

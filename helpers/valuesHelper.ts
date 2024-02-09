@@ -55,7 +55,9 @@ const tweetValuesObject = {
     isEditedField: values.tweet.isEdited,
     createdOKMessage: values.tweet.okMessages.created,
     updatedOKMessage: values.tweet.okMessages.updated,
+    deletedOKMessage: values.tweet.okMessages.deleted,
     created500ErrorMessage: values.tweet.errors.cteatedError,
+    deleted500ErrorMessage: values.tweet.errors.deletedError,
     tweetNotFoundMessage: values.tweet.errors.tweetNotFound,
     noTweetsMessage: values.tweet.errors.noTweets
 }

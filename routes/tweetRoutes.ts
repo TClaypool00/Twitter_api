@@ -3,7 +3,7 @@ import { authenticateToken, currentUser, validateUserId } from '../helpers/jwtHe
 import Tweet from '../models/Tweet';
 import { getStatus } from '../helpers/globalFunctions';
 import { jwtValuesObject, maxLenghValue, maxLengthsObject, tweetValuesObject } from '../helpers/valuesHelper';
-import { getTweetById, getTweets, insertTweet, tweetExists, updateTweet } from '../data_access/tweetService';
+import { deleteTweet, getTweetById, getTweets, insertTweet, tweetExists, updateTweet } from '../data_access/tweetService';
 import { tweetObject } from '../helpers/modelHelper';
 const router = express.Router();
 
@@ -82,7 +82,7 @@ router.put('/:id', authenticateToken, async (req, resp) => {
 router.get('/:id', authenticateToken, async (req, resp) => {
     try {
         let tweet = new Tweet();
-        tweet.get(req);
+        tweet.validateTweetId(req);
 
         if (tweet.errors.length > 0) {
             resp.status(400)
@@ -145,6 +145,34 @@ router.get('/', authenticateToken, async (req, resp) => {
 
         resp.status(200)
         .json(getStatus(jsonTweets));
+    } catch (error: any) {
+        resp.status(500)
+        .json(getStatus(error));
+    }
+});
+
+router.delete('/:id', authenticateToken, async (req, resp) => {
+    try {
+        let tweet = new Tweet();
+
+        tweet.validateTweetId(req);
+
+        if (tweet.errors.length > 0) {
+            resp.status(400)
+            .json(tweet.errors);
+        } 
+
+        if (!await tweetExists(Number(tweet.tweetId), currentUser.userId)) {
+            resp.status(400)
+            .json(getStatus(tweetValuesObject.tweetNotFoundMessage));
+        }
+
+        if (await deleteTweet(Number(tweet.tweetId)) === 1) {
+            resp.status(200)
+            .json(getStatus(tweetValuesObject.deletedOKMessage));
+        } else {
+            throw tweetValuesObject.deleted500ErrorMessage;
+        }
     } catch (error: any) {
         resp.status(500)
         .json(getStatus(error));

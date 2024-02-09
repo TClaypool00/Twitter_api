@@ -41,12 +41,14 @@
         "isEdited": "Is edited",
         "okMessages" : {
             "created": "Tweet has been posted!",
-            "updated": "Tweet has been updated!"
+            "updated": "Tweet has been updated!",
+            "deleted": "Tweet has been deleted!"
         },
         "errors" : {
             "cteatedError": "Could not publish tweet",
             "tweetNotFound": "The tweet either does not exist or you do not have access",
-            "noTweets": "No tweets found"
+            "noTweets": "No tweets found",
+            "deletedError" : "Could not delete tweet"
         }
     },
     "password" : {

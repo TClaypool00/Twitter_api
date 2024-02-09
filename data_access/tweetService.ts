@@ -102,3 +102,11 @@ export async function getTweets(tweet:Tweet, limitValue: number) : Promise<Array
 
     return tweets;
 }
+
+export async function deleteTweet(tweetId: number) : Promise<Number> {
+    let [deletedTweet] = await connection.query('call delete_tweet(?)', [tweetId]);
+
+    let jsonObject = getJSONObject(deletedTweet);
+    
+    return Number(jsonObject.affectedRows);
+}
