@@ -64,9 +64,12 @@ const tweetValuesObject = {
 
 const likeValuesObject = {
     createdOKMessage: values.like.okMessages.created,
+    deletedOKMessage: values.like.okMessages.deleted,
     created500Message: values.like.errors.createdError,
+    deleted500Message: values.like.errors.deletedError,
     alreadyExistMessage: values.like.errors.exist,
-    doesNotExistMessage: values.like.errors.doesNotExist
+    doesNotExistMessage: values.like.errors.doesNotExist,
+    likeIdField: values.like.likeId
 };
 
 const routerValuesObject = {

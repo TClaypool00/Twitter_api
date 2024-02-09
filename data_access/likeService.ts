@@ -18,3 +18,19 @@ export async function tweetLikeExists(like: Like) : Promise<Boolean> {
 
     return Boolean(jsonObject.like_exists);
 }
+
+export async function likeExists(like: Like) : Promise<Boolean> {
+    let [exists] = await connection.query('call like_exists(?, ?)', [like.likeId, like.userId]);
+
+    let jsonObject = getJSONObject(exists);
+    jsonObject = jsonObject[0][0];
+
+    return Boolean(jsonObject.like_exists);
+}
+
+export async function deleteLike(likeId: number) : Promise<Boolean> {
+    let [deletedLike] = await connection.query('call delete_like(?)', [likeId]);
+    let jsonObject = getJSONObject(deletedLike);
+
+    return Number(jsonObject.affectedRows) === 1;
+}

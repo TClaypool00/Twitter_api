@@ -52,13 +52,16 @@
         }
     },
     "like" : {
+        "likeId": "Like id",
         "okMessages" : {
-            "created" : "Like has been added!"
+            "created" : "Like has been added!",
+            "deleted": "Like has been deleted"
         },
         "errors" : {
             "cteatedError" : "Could not add like",
             "exist": "Like already exists",
-            "doesNotExist": "Like does not exist"
+            "doesNotExist": "The like either does not exist or you do not have access to it",
+            "deletedError": "Could not delete like"
         }
     },
     "password" : {

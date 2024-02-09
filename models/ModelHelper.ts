@@ -47,6 +47,8 @@ export default abstract class ModelHelper {
             this.errors.push(requiredValue(this.tweetIdField));
         }
     }
+
+    //TODO: Validate if value is a number
     //#endregion
     //#endregion
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2024 at 05:52 AM
+-- Generation Time: Feb 09, 2024 at 04:28 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -27,14 +27,14 @@ DELIMITER $$
 --
 -- Procedures
 --
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_like` (IN `l_id` INT)   BEGIN
+	DELETE FROM likes
+    WHERE like_id;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_tweet` (IN `id` INT)   BEGIN
 	DELETE FROM tweets
     WHERE tweet_id = id;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_like` (IN `l_id` INT)   BEGIN
-	DELETE FROM likes
-    WHERE like_id = l_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `email_existts` (IN `email` VARCHAR(255), IN `user_id` INT)   BEGIN
@@ -73,6 +73,14 @@ END$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_user` (IN `username` VARCHAR(255), IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `phone_number` VARCHAR(255))   INSERT INTO users
 (username, first_name, last_name, email, password, phone_number)
 VALUES (username, first_name, last_name, email, password, phone_number)$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `like_exists` (IN `l_id` INT, IN `u_id` INT)   BEGIN
+	IF u_id IS NULL THEN
+    	SELECT EXISTS(SELECT * FROM likes l WHERE l.like_id = l_id) AS like_exists;
+    ELSE
+    	SELECT EXISTS(SELECT * FROM likes l WHERE l.like_id = l_id AND l.user_id = u_id) AS like_exists;
+    END IF;
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `phone_number_exists` (IN `phone_number` VARCHAR(10), IN `user_id` INT)   BEGIN
 IF user_id IS NULL THEN
