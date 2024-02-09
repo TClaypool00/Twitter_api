@@ -51,6 +51,16 @@
             "deletedError" : "Could not delete tweet"
         }
     },
+    "like" : {
+        "okMessages" : {
+            "created" : "Like has been added!"
+        },
+        "errors" : {
+            "cteatedError" : "Could not add like",
+            "exist": "Like already exists",
+            "doesNotExist": "Like does not exist"
+        }
+    },
     "password" : {
         "errors" : {
             "passwordsNotMatch" : "Passwords do not match",

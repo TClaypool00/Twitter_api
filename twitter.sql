@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2024 at 02:21 AM
+-- Generation Time: Feb 09, 2024 at 05:52 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -30,6 +30,11 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_tweet` (IN `id` INT)   BEGIN
 	DELETE FROM tweets
     WHERE tweet_id = id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_like` (IN `l_id` INT)   BEGIN
+	DELETE FROM likes
+    WHERE like_id = l_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `email_existts` (IN `email` VARCHAR(255), IN `user_id` INT)   BEGIN
@@ -60,6 +65,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet` (IN `tweet_text` VARC
     SELECT t.tweet_id, t.create_date FROM tweets t WHERE t.tweet_id = tweet_id;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet_like` (IN `user_Id` INT, IN `tweet_id` INT)   BEGIN
+	INSERT INTO likes (user_id, tweet_id)
+    VALUES (user_id, tweet_id);
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_user` (IN `username` VARCHAR(255), IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `phone_number` VARCHAR(255))   INSERT INTO users
 (username, first_name, last_name, email, password, phone_number)
 VALUES (username, first_name, last_name, email, password, phone_number)$$
@@ -80,6 +90,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `tweet_exists` (IN `tweet_id` INT, I
     END IF;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `tweet_like_exists` (IN `user_id` INT, IN `tweet_id` INT)   BEGIN
+	SELECT EXISTS(SELECT * FROM likes l WHERE l.user_id = user_id AND l.tweet_id = tweet_id) AS like_exists;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_tweet` (IN `tweet_id` INT, IN `tweet_text` INT)   BEGIN
 	UPDATE tweets
     SET tweet_text = tweet_text, update_date = CURRENT_DATE()
@@ -98,6 +112,22 @@ END IF;
 END$$
 
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `likes`
+--
+
+CREATE TABLE IF NOT EXISTS `likes` (
+  `like_id` int(11) NOT NULL AUTO_INCREMENT,
+  `create_date` date NOT NULL DEFAULT curdate(),
+  `user_id` int(11) NOT NULL,
+  `tweet_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`like_id`),
+  KEY `user_id` (`user_id`),
+  KEY `tweet_id` (`tweet_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -176,6 +206,13 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `likes`
+--
+ALTER TABLE `likes`
+  ADD CONSTRAINT `likes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`tweet_id`) REFERENCES `tweets` (`tweet_id`);
 
 --
 -- Constraints for table `refresh_tokens`

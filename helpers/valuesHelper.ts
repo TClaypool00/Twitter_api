@@ -62,6 +62,13 @@ const tweetValuesObject = {
     noTweetsMessage: values.tweet.errors.noTweets
 }
 
+const likeValuesObject = {
+    createdOKMessage: values.like.okMessages.created,
+    created500Message: values.like.errors.createdError,
+    alreadyExistMessage: values.like.errors.exist,
+    doesNotExistMessage: values.like.errors.doesNotExist
+};
+
 const routerValuesObject = {
     defaultMessage: values.router.defaultMessage
 }
@@ -86,5 +93,6 @@ export {
     jwtValuesObject,
     routerValuesObject,
     tweetValuesObject,
-    globalValuesObject
+    globalValuesObject,
+    likeValuesObject
 }
