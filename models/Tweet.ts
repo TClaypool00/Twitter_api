@@ -6,14 +6,12 @@ import ModelHelper from "./ModelHelper";
 export default class Tweet extends ModelHelper {
     //#region  Private Fields
     private readonly tweetTextField: string;
-    private readonly userIdField : string;
     private readonly startDateField: string;
     private readonly endDateField: string;
     private readonly isEditedField: string;
     //#endregion
 
     //#region Public Properites
-    public tweetId: number | undefined | null;
     public tweetText: string | undefined | null;
     public createDate : Date | null;
     public createDateString: string;
@@ -24,11 +22,9 @@ export default class Tweet extends ModelHelper {
     public startDate: Date | null;
     public endDate: Date | null;
     public isEdited: boolean | null;
-    public userId : number | undefined | null;
     public userFirstName: string;
     public userLastName: string;
     public userDisplayName: string;
-    public errors: [string] = [''];
     //#endregion
 
     //#region  Constructors
@@ -38,7 +34,6 @@ export default class Tweet extends ModelHelper {
         super();
 
         this.tweetTextField = tweetValuesObject.tweetTextField;
-        this.userIdField = userValuesObject.userIdField;
         this.startDateField = tweetValuesObject.startDateField;
         this.endDateField = tweetValuesObject.endDateField;
         this.isEditedField = tweetValuesObject.isEditedField;
@@ -57,8 +52,6 @@ export default class Tweet extends ModelHelper {
         this.datePublishedString = '';
         this.endDate = null;
         this.startDate = null;
-
-        this.errors.splice(0, 1);
     }
     //#endregion
 
