@@ -73,6 +73,13 @@ const likeValuesObject = {
     likeIdField: values.like.likeId
 };
 
+const commentValuesObject = {
+    commentIdField: values.comment.commentId,
+    commentTextField: values.comment.commentText,
+    createdOKMessage: values.comment.okMessages.created,
+    created500Message: values.comment.errors.createdError
+};
+
 const routerValuesObject = {
     defaultMessage: values.router.defaultMessage
 }
@@ -98,5 +105,6 @@ export {
     routerValuesObject,
     tweetValuesObject,
     globalValuesObject,
-    likeValuesObject
+    likeValuesObject,
+    commentValuesObject
 }

@@ -67,6 +67,16 @@
             "deletedError": "Could not delete like"
         }
     },
+    "comment": {
+        "commentId": "Comment id",
+        "commentText": "Comment text",
+        "okMessages": {
+            "created": "Comment has been posted!"
+        },
+        "errors": {
+            "cteatedError":"Could not publish comment"
+        }
+    },
     "password" : {
         "errors" : {
             "passwordsNotMatch" : "Passwords do not match",
