@@ -1,3 +1,4 @@
+import Comment from "../models/Comment";
 import Tweet from "../models/Tweet";
 
 export function requiredIsNull(value : string | undefined | null) : boolean {
@@ -36,4 +37,18 @@ export function tweetObject(tweet: Tweet, status: string = '') {
         liked: tweet.liked,
         status: status
     }
+}
+
+export function commentObject(comment: Comment, status: string) {
+    return {
+        commentId: Number(comment.commentId),
+        commentText: comment.commentText,
+        createDate: comment.createDateString,
+        isEdited: comment.isEdited,
+        userId: comment.userId,
+        userDisplayName: comment.userDisplayName,
+        likeCount: comment.likeCount,
+        liked: comment.liked,
+        status: status
+    };
 }

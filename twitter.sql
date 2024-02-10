@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2024 at 07:57 PM
+-- Generation Time: Feb 10, 2024 at 03:56 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -63,6 +63,13 @@ LIMIT 1$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_tweet_by_id` (IN `tweet_id` INT, IN `user_id` INT)   BEGIN
 	SELECT t.*, EXISTS(SELECT * FROM likes l WHERE l.tweet_id = tweet_id AND l.user_id = user_id) AS liked FROM vw_tweets t WHERE t.tweet_id = tweet_id
     LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_comment` (IN `comment_text` VARCHAR(255), IN `user_id` INT, IN `tweet_id` INT)   BEGIN
+	INSERT INTO comments (comment_text, user_id, tweet_id)
+    VALUES(comment_text, user_id, tweet_id);
+    
+    SELECT c.comment_id, c.create_date FROM comments c WHERE c.comment_id = LAST_INSERT_ID();
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet` (IN `tweet_text` VARCHAR(255), IN `user_id` INT)   BEGIN
@@ -135,6 +142,24 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `comments`
+--
+
+CREATE TABLE IF NOT EXISTS `comments` (
+  `comment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `comment_text` varchar(255) NOT NULL,
+  `create_date` date NOT NULL DEFAULT curdate(),
+  `update_date` date DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
+  `tweet_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`comment_id`),
+  KEY `user_id` (`user_id`),
+  KEY `tweet_id` (`tweet_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `likes`
 --
 
@@ -202,6 +227,22 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `vw_comments`
+-- (See below for the actual view)
+--
+CREATE TABLE IF NOT EXISTS `vw_comments` (
+`comment_id` int(11)
+,`comment_text` varchar(255)
+,`create_date` date
+,`update_date` date
+,`user_id` int(11)
+,`tweet_id` int(11)
+,`like_count` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `vw_tweets`
 -- (See below for the actual view)
 --
@@ -219,6 +260,15 @@ CREATE TABLE IF NOT EXISTS `vw_tweets` (
 -- --------------------------------------------------------
 
 --
+-- Structure for view `vw_comments`
+--
+DROP TABLE IF EXISTS `vw_comments`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_comments`  AS SELECT `c`.`comment_id` AS `comment_id`, `c`.`comment_text` AS `comment_text`, `c`.`create_date` AS `create_date`, `c`.`update_date` AS `update_date`, `c`.`user_id` AS `user_id`, `c`.`tweet_id` AS `tweet_id`, count(`c`.`comment_id`) AS `like_count` FROM ((`comments` `c` join `users` `u` on(`c`.`user_id` = `u`.`user_id`)) join `likes` `l` on(`l`.`comment_id` = `c`.`comment_id`))  ;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `vw_tweets`
 --
 DROP TABLE IF EXISTS `vw_tweets`;
@@ -228,6 +278,13 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `comments`
+--
+ALTER TABLE `comments`
+  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`tweet_id`) REFERENCES `tweets` (`tweet_id`);
 
 --
 -- Constraints for table `likes`
