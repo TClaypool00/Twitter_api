@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 10, 2024 at 03:56 AM
+-- Generation Time: Feb 11, 2024 at 08:18 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -27,6 +27,14 @@ DELIMITER $$
 --
 -- Procedures
 --
+CREATE DEFINER=`root`@`localhost` PROCEDURE `comment_exists` (IN `comment_id` INT, IN `user_id` INT)   BEGIN
+	IF user_id IS NULL THEN
+    	SELECT EXISTS(SELECT * FROM comments c WHERE c.comment_id = comment_id) AS comment_exists;
+    ELSE
+    	SELECT EXISTS(SELECT * FROM comments c WHERE c.comment_id = comment_id AND c.user_id = user_id) AS comment_exists;
+    END IF;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_like` (IN `l_id` INT)   BEGIN
 	DELETE FROM likes
     WHERE like_id;
@@ -118,6 +126,14 @@ END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `tweet_like_exists` (IN `user_id` INT, IN `tweet_id` INT)   BEGIN
 	SELECT EXISTS(SELECT * FROM likes l WHERE l.user_id = user_id AND l.tweet_id = tweet_id) AS like_exists;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_comment` (IN `c_id` INT, IN `c_text` VARCHAR(255))   BEGIN
+	UPDATE comments
+    SET comment_text = c_text, update_date = CURRENT_TIMESTAMP()
+    WHERE comment_id = c_id;
+    
+    SELECT c.update_date FROM comments c WHERE c.comment_id = c_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_tweet` (IN `tweet_id` INT, IN `tweet_text` INT)   BEGIN

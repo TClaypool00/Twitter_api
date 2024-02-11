@@ -1,4 +1,4 @@
-import { requiredIsNull } from "../helpers/modelHelper";
+import { requiredIsNull, requiredNumberIsNull } from "../helpers/modelHelper";
 import { commentValuesObject, requiredValue } from "../helpers/valuesHelper";
 import ModelHelper from "./ModelHelper";
 
@@ -25,7 +25,7 @@ export default class Comment extends ModelHelper {
     //#endregion
 
     //#region Public Methods
-    public create(reqBody: any): void {
+    public create(reqBody: any, update: boolean = false): void {
         this.commentText = reqBody.commentText;
         this.userId = reqBody.userId;
         this.tweetId = reqBody.tweetId;
@@ -38,13 +38,31 @@ export default class Comment extends ModelHelper {
         }
 
         this.userIdIsNull();
-        this.tweetIdIsNull();
+        
+        if (!update) {
+            this.tweetIdIsNull();
+        }
+    }
+
+    public update(reqBody: any, id: any) {
+        this.commentId = id;
+
+        if (requiredNumberIsNull(this.commentId)) {
+            this.errors.push(requiredValue(this.commentIdField));
+        }
+
+        this.create(reqBody, true);
     }
 
     public setCreateData(data: any) : void {
         this.commentId = data.comment_id;
         this.createDate = new Date(data.create_date);
         this.setCreateDate();
+    }
+
+    public setUpdateData(data: any): void {
+        this.updateDate = new Date(String(data.update_date));
+        this.isEdited = true;
     }
     //#endregion
 }

@@ -71,10 +71,13 @@
         "commentId": "Comment id",
         "commentText": "Comment text",
         "okMessages": {
-            "created": "Comment has been posted!"
+            "created": "Comment has been posted!",
+            "updated": "Comment has been updated"
         },
         "errors": {
-            "cteatedError":"Could not publish comment"
+            "cteatedError":"Could not publish comment",
+            "updatedError": "could not update comment",
+            "commentNotFound": "The comment either does not exist or you do have access to it"
         }
     },
     "password" : {

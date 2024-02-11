@@ -77,7 +77,10 @@ const commentValuesObject = {
     commentIdField: values.comment.commentId,
     commentTextField: values.comment.commentText,
     createdOKMessage: values.comment.okMessages.created,
-    created500Message: values.comment.errors.createdError
+    created500Message: values.comment.errors.createdError,
+    updatedOKMessage: values.comment.okMessages.updated,
+    updated500Message: values.comment.errors.updatedError,
+    doesNotExistMessage: values.comment.errors.commentNotFound
 };
 
 const routerValuesObject = {
