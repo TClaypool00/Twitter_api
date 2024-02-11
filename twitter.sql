@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 11, 2024 at 08:18 AM
+-- Generation Time: Feb 11, 2024 at 08:22 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -136,7 +136,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `update_comment` (IN `c_id` INT, IN 
     SELECT c.update_date FROM comments c WHERE c.comment_id = c_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_tweet` (IN `tweet_id` INT, IN `tweet_text` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_tweet` (IN `tweet_id` INT, IN `tweet_text` VARCHAR(255))   BEGIN
 	UPDATE tweets
     SET tweet_text = tweet_text, update_date = CURRENT_DATE()
     WHERE tweet_id = tweet_id;
