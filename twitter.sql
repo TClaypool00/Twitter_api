@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 11, 2024 at 08:22 AM
+-- Generation Time: Feb 11, 2024 at 06:43 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -62,6 +62,10 @@ IF user_id IS NULL THEN
 ELSE
 	SELECT EXISTS(SELECT * FROM users u WHERE u.email = email AND u.user_id = user_id) AS email_exists;
 END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_comment_by_id` (IN `c_id` INT, IN `u_id` INT)   BEGIN
+	SELECT c.*, EXISTS(SELECT * FROM likes l WHERE l.user_id = u_id AND l.comment_id = c_id) AS liked FROM vw_comments c WHERE c.comment_id = c_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_single_user_by_email` (IN `email` VARCHAR(255))   SELECT * FROM users u
@@ -253,6 +257,8 @@ CREATE TABLE IF NOT EXISTS `vw_comments` (
 ,`update_date` date
 ,`user_id` int(11)
 ,`tweet_id` int(11)
+,`first_name` varchar(255)
+,`last_name` varchar(255)
 ,`like_count` bigint(21)
 );
 
@@ -280,7 +286,7 @@ CREATE TABLE IF NOT EXISTS `vw_tweets` (
 --
 DROP TABLE IF EXISTS `vw_comments`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_comments`  AS SELECT `c`.`comment_id` AS `comment_id`, `c`.`comment_text` AS `comment_text`, `c`.`create_date` AS `create_date`, `c`.`update_date` AS `update_date`, `c`.`user_id` AS `user_id`, `c`.`tweet_id` AS `tweet_id`, count(`c`.`comment_id`) AS `like_count` FROM ((`comments` `c` join `users` `u` on(`c`.`user_id` = `u`.`user_id`)) join `likes` `l` on(`l`.`comment_id` = `c`.`comment_id`))  ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_comments`  AS SELECT `c`.`comment_id` AS `comment_id`, `c`.`comment_text` AS `comment_text`, `c`.`create_date` AS `create_date`, `c`.`update_date` AS `update_date`, `c`.`user_id` AS `user_id`, `c`.`tweet_id` AS `tweet_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count` FROM ((`comments` `c` left join `likes` `l` on(`c`.`comment_id` = `l`.`comment_id`)) join `users` `u` on(`u`.`user_id` = `c`.`user_id`)) GROUP BY 11  ;
 
 -- --------------------------------------------------------
 
@@ -289,7 +295,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vw_tweets`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `t`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count` FROM ((`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`)) join `likes` `l` on(`l`.`tweet_id` = `t`.`tweet_id`))  ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `t`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count` FROM ((`tweets` `t` left join `likes` `l` on(`t`.`tweet_id` = `l`.`tweet_id`)) join `users` `u` on(`u`.`user_id` = `t`.`user_id`)) GROUP BY 11  ;
 
 --
 -- Constraints for dumped tables
