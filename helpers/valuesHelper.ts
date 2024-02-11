@@ -99,6 +99,10 @@ export function maxLenghValue(name : string, maxLengh : number) : string {
     return `${name} ${maxLengh} ${maxLengh}`
 }
 
+export function notANumberValue(name: string) : string {
+    return `${name} ${errorsObject.notNumberMessage}`;
+}
+
 export {
     errorsObject,
     maxLengthsObject,
