@@ -1,5 +1,6 @@
 import connect from "../database/database";
 import { getJSONObject } from "../helpers/jsonHelper";
+import { currentUser } from "../helpers/jwtHelper";
 import Comment from "../models/Comment";
 
 const connection = connect();
@@ -30,4 +31,14 @@ export async function commentExists(comment:Comment) : Promise<Boolean> {
     jsonObject = jsonObject[0][0];
 
     return Boolean(jsonObject.comment_exists);
+}
+
+export async function getComment(comment:Comment) : Promise<Comment> {
+    let [dataComment] = await connection.query('call get_comment_by_id(?, ?)', [comment.commentId, currentUser.userId]);
+    let jsonObject = getJSONObject(dataComment);
+    jsonObject = jsonObject[0][0];
+
+    comment.setData(jsonObject);
+
+    return comment;
 }

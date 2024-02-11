@@ -39,7 +39,7 @@ export function tweetObject(tweet: Tweet, status: string = '') {
     }
 }
 
-export function commentObject(comment: Comment, status: string) {
+export function commentObject(comment: Comment, status: string = '') {
     return {
         commentId: Number(comment.commentId),
         commentText: comment.commentText,

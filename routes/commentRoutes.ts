@@ -3,7 +3,7 @@ import { getStatus } from '../helpers/globalFunctions';
 import Comment from '../models/Comment';
 import { authenticateToken, currentUser, validateUserId } from '../helpers/jwtHelper';
 import { commentValuesObject, jwtValuesObject } from '../helpers/valuesHelper';
-import { commentExists, insertComment, updateComment } from '../data_access/commentService';
+import { commentExists, getComment, insertComment, updateComment } from '../data_access/commentService';
 import { commentObject } from '../helpers/modelHelper';
 
 const router = express.Router();
@@ -78,6 +78,36 @@ router.put('/:id', authenticateToken, async (req, resp) => {
         } else {
             throw commentValuesObject.updated500Message;
         }
+    } catch (error: any) {
+        resp.status(500)
+        .json(getStatus(error));
+    }
+});
+
+router.get('/:id', authenticateToken, async (req, resp) => {
+    try {
+        let comment = new Comment();
+        comment.setId(req.params.id);
+
+        if (comment.errors.length > 0) {
+            resp.status(400)
+            .json(getStatus(comment.errors));
+
+            return;
+        }
+
+        if (!await commentExists(comment)) {
+            resp.status(404)
+            .json(getStatus(commentValuesObject.doesNotExistMessage));
+
+            return;
+        }
+
+        comment = await getComment(comment);
+
+        resp.status(200)
+        .json(getStatus(commentObject(comment)));
+        
     } catch (error: any) {
         resp.status(500)
         .json(getStatus(error));

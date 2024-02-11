@@ -1,5 +1,5 @@
 import { requiredIsNull, requiredNumberIsNull } from "../helpers/modelHelper";
-import { commentValuesObject, requiredValue } from "../helpers/valuesHelper";
+import { commentValuesObject, notANumberValue, requiredValue } from "../helpers/valuesHelper";
 import ModelHelper from "./ModelHelper";
 
 export default class Comment extends ModelHelper {
@@ -45,11 +45,7 @@ export default class Comment extends ModelHelper {
     }
 
     public update(reqBody: any, id: any) {
-        this.commentId = id;
-
-        if (requiredNumberIsNull(this.commentId)) {
-            this.errors.push(requiredValue(this.commentIdField));
-        }
+        this.setId(id);
 
         this.create(reqBody, true);
     }
@@ -63,6 +59,33 @@ export default class Comment extends ModelHelper {
     public setUpdateData(data: any): void {
         this.updateDate = new Date(String(data.update_date));
         this.isEdited = true;
+    }
+
+    public setId(id: any) {
+        this.commentId = id;
+
+        if (requiredNumberIsNull(this.commentId)) {
+            this.errors.push(requiredValue(this.commentIdField));
+        }
+
+        if (isNaN(Number(this.commentId))) {
+            this.errors.push(notANumberValue(this.commentIdField));
+        }
+    }
+
+    public setData(data: any): void {
+        this.commentText = data.comment_text;
+        this.createDate = new Date(String(data.create_date));
+        this.setCreateDate();
+        if (data.update_date !== null) {
+            this.updateDate = new Date(String(data.update_date));
+        }
+        
+        this.tweetId = data.tweet_id;
+        this.likeCount = data.like_count;
+        this.liked = Boolean(data.liked);
+        this.setUserNames(data.user_id, data.first_name, data.last_name);
+        this.isEdited = this.updateDate !== null;
     }
     //#endregion
 }
