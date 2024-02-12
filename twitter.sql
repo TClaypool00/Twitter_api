@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 11, 2024 at 06:43 PM
+-- Generation Time: Feb 12, 2024 at 03:57 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -33,6 +33,22 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `comment_exists` (IN `comment_id` IN
     ELSE
     	SELECT EXISTS(SELECT * FROM comments c WHERE c.comment_id = comment_id AND c.user_id = user_id) AS comment_exists;
     END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_comment` (IN `c_id` INT)   BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    	ROLLBACK;
+    END;
+    
+    START TRANSACTION;
+    DELETE FROM likes
+    WHERE comment_id = c_id;
+    
+    DELETE FROM comments
+    WHERE comment_id = c_id;
+    
+    COMMIT;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_like` (IN `l_id` INT)   BEGIN

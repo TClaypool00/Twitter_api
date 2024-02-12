@@ -80,6 +80,8 @@ const commentValuesObject = {
     created500Message: values.comment.errors.createdError,
     updatedOKMessage: values.comment.okMessages.updated,
     updated500Message: values.comment.errors.updatedError,
+    deletedOKMessage: values.comment.okMessages.deleted,
+    deleted500Message: values.comment.errors.deletedError,
     doesNotExistMessage: values.comment.errors.commentNotFound
 };
 

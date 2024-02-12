@@ -42,3 +42,10 @@ export async function getComment(comment:Comment) : Promise<Comment> {
 
     return comment;
 }
+
+export async function deleteComment(comment:Comment): Promise<Boolean> {
+    let [deletedComment] = await connection.query(`call delete_comment(?)`, [comment.commentId]);
+    let jsonObject = getJSONObject(deletedComment);
+
+    return Number(jsonObject.affectedRows) > 0;
+}
