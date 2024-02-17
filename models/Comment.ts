@@ -4,19 +4,16 @@ import ModelHelper from "./ModelHelper";
 
 export default class Comment extends ModelHelper {
     //#region Private Fields
-    private readonly commentIdField: string;
     private readonly commentTextField: string;
     //#endregion
 
     //#region Public Properites
-    public commentId: number | undefined | null;
     public commentText: string | undefined | null;
     //#endregion
 
     //#region Constructors
     constructor() {
         super();
-        this.commentIdField = commentValuesObject.commentIdField;
         this.commentTextField = commentValuesObject.commentTextField;
 
         this.commentId = null;

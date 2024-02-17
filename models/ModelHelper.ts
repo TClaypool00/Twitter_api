@@ -1,12 +1,13 @@
 import { isValidDate } from "../helpers/globalFunctions";
 import { requiredNumberIsNull } from "../helpers/modelHelper";
 import { globalValuesObject, requiredValue } from "../helpers/valuesHelper";
-import { userValuesObject, tweetValuesObject } from "../helpers/valuesHelper";
+import { userValuesObject, tweetValuesObject, commentValuesObject } from "../helpers/valuesHelper";
 import { errorsObject } from "../helpers/valuesHelper";
 
 export default abstract class ModelHelper {
    //#region Public Properites
     public index: number | null;
+    public commentId: number | undefined | null;
     public userId: number | undefined | null;
     public tweetId: number | undefined | null;
     public errors: [string] = [''];
@@ -35,6 +36,8 @@ export default abstract class ModelHelper {
     protected startDateField: string;
     protected endDateField: string;
     protected isEditedField: string;
+    protected commentIdField: string;
+
     //#endregion
 
     //#region Constructors
@@ -45,6 +48,7 @@ export default abstract class ModelHelper {
         this.startDateField = tweetValuesObject.startDateField;
         this.endDateField = tweetValuesObject.endDateField;
         this.isEditedField = tweetValuesObject.isEditedField;
+        this.commentIdField = commentValuesObject.commentIdField;
 
         this.index = null;
         this.likeCount = 0;
@@ -78,6 +82,12 @@ export default abstract class ModelHelper {
     public userIdIsNull() {
         if (requiredNumberIsNull(this.userId)) {
             this.errors.push(requiredValue(this.userIdField));
+        }
+    }
+
+    public commentIdIsNull() {
+        if (requiredNumberIsNull(this.commentId)) {
+            this.errors.push(requiredValue(this.commentIdField))
         }
     }
 
