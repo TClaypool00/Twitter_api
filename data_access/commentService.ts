@@ -1,6 +1,8 @@
 import connect from "../database/database";
 import { getJSONObject } from "../helpers/jsonHelper";
 import { currentUser } from "../helpers/jwtHelper";
+import { generateGetAllSql, getAllSql, getallParams } from "../helpers/serviceHelper";
+import { commentValuesObject, maxLengthsObject } from "../helpers/valuesHelper";
 import Comment from "../models/Comment";
 
 const connection = connect();
@@ -48,4 +50,24 @@ export async function deleteComment(comment:Comment): Promise<Boolean> {
     let jsonObject = getJSONObject(deletedComment);
 
     return Number(jsonObject.affectedRows) > 0;
+}
+
+export async function getComments(comment:Comment, limitValue: number) : Promise<Array<Comment>> {
+    //TODO: Add Start and End date logoic to query
+    let comments = new Array<Comment>;
+    generateGetAllSql(comment, 'vw_comments', commentValuesObject.likedSql, maxLengthsObject.standardTakeValue, 'comment_text');
+    
+    let [dataComments] = await connection.query(getAllSql, getallParams);
+    let jsonObject = getJSONObject(dataComments);
+
+    if (jsonObject.length > 0) {
+        for (let i = 0; i < jsonObject.length; i++) {
+            const data = jsonObject[i];
+            let dataComment = new Comment();
+            dataComment.setData(data);
+            comments.push(dataComment);
+        }
+    }
+
+    return comments;
 }

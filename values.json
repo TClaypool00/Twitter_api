@@ -79,7 +79,11 @@
             "cteatedError":"Could not publish comment",
             "updatedError": "could not update comment",
             "deletedError": "Could not delete comment",
-            "commentNotFound": "The comment either does not exist or you do have access to it"
+            "commentNotFound": "The comment either does not exist or you do have access to it",
+            "noComments": "No comments found"
+        },
+        "sql": {
+            "liked": ", EXISTS(SELECT * FROM likes l WHERE l.comment_id = c.comment_id AND l.user_id = ?) AS liked "
         }
     },
     "password" : {

@@ -2,8 +2,8 @@ import express from 'express';
 import { getStatus } from '../helpers/globalFunctions';
 import Comment from '../models/Comment';
 import { authenticateToken, currentUser, validateUserId } from '../helpers/jwtHelper';
-import { commentValuesObject, jwtValuesObject } from '../helpers/valuesHelper';
-import { commentExists, deleteComment, getComment, insertComment, updateComment } from '../data_access/commentService';
+import { commentValuesObject, jwtValuesObject, maxLengthsObject } from '../helpers/valuesHelper';
+import { commentExists, deleteComment, getComment, getComments, insertComment, updateComment } from '../data_access/commentService';
 import { commentObject } from '../helpers/modelHelper';
 
 const router = express.Router();
@@ -113,6 +113,53 @@ router.get('/:id', authenticateToken, async (req, resp) => {
         .json(getStatus(error));
     }
 });
+
+//TODO: sort by by like count
+//TODO: sort by liked
+router.get('/', authenticateToken, async (req, resp) => {
+    try {
+        let comment = new Comment();
+        comment.getAll(req.query);
+
+        if (comment.errors.length > 0) {
+            resp.status(400)
+            .json(getStatus(comment.errors));
+
+            return;
+        }
+
+        if (typeof comment.userId === 'number' && comment.isEdited && !validateUserId(comment.userId)) {
+            resp.status(403)
+            .json(getStatus(jwtValuesObject.unauthorizedMessage));
+
+            return;
+        }
+
+        let comments: Array<Comment> = await getComments(comment, maxLengthsObject.standardTakeValue);
+
+        if (comments.length === 0) {
+            resp.status(404)
+            .json(getStatus(commentValuesObject.noCommentsMessage));
+
+            return;
+        }
+
+        let jsonComments: [any] = [''];
+        jsonComments.splice(0, 1);
+        
+        for (let i = 0; i < comments.length; i++) {
+            const comment = comments[i];
+            jsonComments.push(commentObject(comment));
+        }
+
+        resp.status(200)
+        .json(getStatus(jsonComments));
+
+    } catch (error: any) {
+        resp.status(500)
+        .json(getStatus(error));
+    }
+})
 
 router.delete('/:id', authenticateToken, async (req, resp) => {
     try {

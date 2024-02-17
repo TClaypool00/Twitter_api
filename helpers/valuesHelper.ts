@@ -82,7 +82,9 @@ const commentValuesObject = {
     updated500Message: values.comment.errors.updatedError,
     deletedOKMessage: values.comment.okMessages.deleted,
     deleted500Message: values.comment.errors.deletedError,
-    doesNotExistMessage: values.comment.errors.commentNotFound
+    doesNotExistMessage: values.comment.errors.commentNotFound,
+    likedSql: values.comment.sql.liked,
+    noCommentsMessage: values.comment.errors.noComments
 };
 
 const routerValuesObject = {

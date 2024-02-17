@@ -50,6 +50,14 @@ export default class Comment extends ModelHelper {
         this.create(reqBody, true);
     }
 
+    public getAll(reqQuery: any ) {
+        if (typeof reqQuery.commentText !== 'undefined') {
+            this.search = `%${String(reqQuery.commentText)}%`;
+        }
+
+        this.subGetAll(reqQuery);
+    }
+
     public setCreateData(data: any) : void {
         this.commentId = data.comment_id;
         this.createDate = new Date(data.create_date);
@@ -74,6 +82,7 @@ export default class Comment extends ModelHelper {
     }
 
     public setData(data: any): void {
+        this.commentId = Number(data.comment_id);
         this.commentText = data.comment_text;
         this.createDate = new Date(String(data.create_date));
         this.setCreateDate();
