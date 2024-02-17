@@ -10,6 +10,7 @@ export default abstract class ModelHelper {
     public errors: [string] = [''];
     public likeCount: number;
     public liked: boolean;
+    public search: string | undefined | null;
 
     public createDate : Date | null;
     public createDateString: string;

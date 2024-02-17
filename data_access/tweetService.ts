@@ -2,7 +2,7 @@ import connect from "../database/database";
 import Tweet from '../models/Tweet';
 import { getJSONObject } from '../helpers/jsonHelper';
 import { tweetValuesObject } from "../helpers/valuesHelper";
-import { currentUser } from "../helpers/jwtHelper";
+import { generateGetAllSql, getAllSql, getallParams } from "../helpers/serviceHelper";
 const connection = connect();
 
 export async function insertTweet(tweet: Tweet) : Promise<Tweet> {
@@ -51,55 +51,9 @@ export async function getTweets(tweet:Tweet, limitValue: number) : Promise<Array
     //TODO: Add Start and End date logoic to query
     
     let tweets = new Array<Tweet>;
-
-    let sql: string = '';
-    let whereClause : string = '';
-    let sqlParams : [any] = [''];
-    sqlParams.splice(0, 1);
-
-    sql = 'SELECT t.*';
-    sql += tweetValuesObject.likedSql;
-    if (tweet.userId === null) {
-        sqlParams.push(currentUser.userId);
-    } else {
-        sqlParams.push(tweet.userId);
-    }
-
-
-    sql+= 'FROM vw_tweets t';
-
-
-    if (tweet.tweetText !== null) {
-        whereClause += `t.tweet_text LIKE ?`;
-        sqlParams.push(tweet.tweetText);
-    }
-
-    if (tweet.userId !== null) {
-        if (whereClause !== '') {
-            whereClause += ' AND ';
-        }
-
-        whereClause += `t.user_id = ?`;
-        sqlParams.push(tweet.userId);
-    }
-
-    if (tweet.isEdited) {
-        if (whereClause !== '') {
-            whereClause += ' AND ';
-        }
-
-        whereClause += 't.update_date IS NOT NULL';
-    }
-
-    if (whereClause !== '') {
-        sql += ' WHERE ';
-        sql += whereClause;
-    }
-
-    sql += ` LIMIT ? OFFSET ?`;
-    sqlParams.push(limitValue, tweet.index);
+    generateGetAllSql(tweet, 'vw_tweets', tweetValuesObject.likedSql, limitValue, 'tweet_text');
     
-    let [dataTweets] = await connection.query(sql, sqlParams);
+    let [dataTweets] = await connection.query(getAllSql, getallParams);
     let jsonObject = getJSONObject(dataTweets);
     
     if (jsonObject.length > 0) {
