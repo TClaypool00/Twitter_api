@@ -1,6 +1,8 @@
+import { isValidDate } from "../helpers/globalFunctions";
 import { requiredNumberIsNull } from "../helpers/modelHelper";
 import { globalValuesObject, requiredValue } from "../helpers/valuesHelper";
 import { userValuesObject, tweetValuesObject } from "../helpers/valuesHelper";
+import { errorsObject } from "../helpers/valuesHelper";
 
 export default abstract class ModelHelper {
    //#region Public Properites
@@ -110,6 +112,52 @@ export default abstract class ModelHelper {
             this.index = 0;
         } else if (typeof reqIndex === 'string' && Number(reqIndex) > 0) {
             this.index = Number(reqIndex) * 10;
+        }
+    }
+
+    protected subGetAll(reqQuery: any): void {
+        if (typeof reqQuery.userId !== 'undefined') {
+            this.userId = reqQuery.userId;
+
+            if (requiredNumberIsNull(this.userId)) {
+                this.errors.push(`${this.userIdField} ${errorsObject.requiredError}`);
+            } else {
+                this.userId = Number(this.userId);
+            }
+        }
+
+        if (typeof reqQuery.startDate !== 'undefined') {
+            if (!isValidDate(reqQuery.startDate)) {
+                this.errors.push(`${this.startDateField}${errorsObject.dateMessage}`);
+            } else {
+                this.startDate = new Date(reqQuery.startDate);
+            }
+        }
+
+        if (typeof reqQuery.endDate !== 'undefined') {
+            if (!isValidDate(reqQuery.endDate)) {
+                this.errors.push(`${this.endDateField}${errorsObject.dateMessage}`);
+            } else {
+                this.endDate = new Date(reqQuery.endDate);
+            }
+        }
+
+        if (typeof reqQuery.isEdited !== 'undefined') {
+            if (typeof reqQuery.isEdited === 'string' && (String(reqQuery.isEdited).toLowerCase() === 'true' || String(reqQuery.isEdited ).toLowerCase() === 'false')) {
+                this.isEdited = reqQuery.isEdited === 'true';
+            } else {
+                this.errors.push(`${this.isEditedField}${errorsObject.notBooleanMessage}`);
+            }
+        }
+
+        if (typeof reqQuery.index !== 'undefined') {
+            if (isNaN(reqQuery.index)) {
+                this.errors.push(`${this.indexField}${errorsObject.notNumberMessage}`);
+            } else {
+                this.setIndex(reqQuery);
+            }
+        } else {
+            this.index = 0;
         }
     }
     //#endregion

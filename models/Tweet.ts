@@ -1,6 +1,5 @@
-import { isValidDate } from "../helpers/globalFunctions";
 import { requiredIsNull, requiredNumberIsNull, valueExceedsLength } from "../helpers/modelHelper";
-import { errorsObject, maxLenghValue, maxLengthsObject, requiredValue, tweetValuesObject, userValuesObject } from "../helpers/valuesHelper";
+import { errorsObject, maxLenghValue, maxLengthsObject, requiredValue, tweetValuesObject } from "../helpers/valuesHelper";
 import ModelHelper from "./ModelHelper";
 
 export default class Tweet extends ModelHelper {
@@ -49,53 +48,10 @@ export default class Tweet extends ModelHelper {
 
     public getAll(reqQuery: any) {
         if (typeof reqQuery.tweetText !== 'undefined') {
-            this.tweetText = `%${String(reqQuery.tweetText)}%`;
-
+            this.search = `%${String(reqQuery.tweetText)}%`;
         }
 
-        if (typeof reqQuery.userId !== 'undefined') {
-            this.userId = reqQuery.userId;
-
-            if (requiredNumberIsNull(this.userId)) {
-                this.errors.push(`${this.userIdField} ${errorsObject.requiredError}`);
-            } else {
-                this.userId = Number(this.userId);
-            }
-        }
-
-        if (typeof reqQuery.startDate !== 'undefined') {
-            if (!isValidDate(reqQuery.startDate)) {
-                this.errors.push(`${this.startDateField}${errorsObject.dateMessage}`);
-            } else {
-                this.startDate = new Date(reqQuery.startDate);
-            }
-        }
-
-        if (typeof reqQuery.endDate !== 'undefined') {
-            if (!isValidDate(reqQuery.endDate)) {
-                this.errors.push(`${this.endDateField}${errorsObject.dateMessage}`);
-            } else {
-                this.endDate = new Date(reqQuery.endDate);
-            }
-        }
-
-        if (typeof reqQuery.isEdited !== 'undefined') {
-            if (typeof reqQuery.isEdited === 'string' && (String(reqQuery.isEdited).toLowerCase() === 'true' || String(reqQuery.isEdited ).toLowerCase() === 'false')) {
-                this.isEdited = reqQuery.isEdited === 'true';
-            } else {
-                this.errors.push(`${this.isEditedField}${errorsObject.notBooleanMessage}`);
-            }
-        }
-
-        if (typeof reqQuery.index !== 'undefined') {
-            if (isNaN(reqQuery.index)) {
-                this.errors.push(`${this.indexField}${errorsObject.notNumberMessage}`);
-            } else {
-                this.setIndex(reqQuery);
-            }
-        } else {
-            this.index = 0;
-        }
+        this.subGetAll(reqQuery);
     }
 
     public setDate(date: any) : void {
