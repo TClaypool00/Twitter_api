@@ -1,5 +1,5 @@
 import { requiredNumberIsNull } from "../helpers/modelHelper";
-import { likeValuesObject, requiredValue } from "../helpers/valuesHelper";
+import { requiredValue, likeValuesObject } from "../helpers/valuesHelper";
 import ModelHelper from "./ModelHelper";
 
 export default class Like extends ModelHelper {
@@ -7,25 +7,33 @@ export default class Like extends ModelHelper {
     public likeId: number | undefined | null;
     //#endregion
 
-    //#region Private field
-    private readonly likeIdField: string;
+    //#region Private Fields
+    protected readonly likeIdField: string;
     //#endregion
 
     //#region Constructotrs
     constructor() {
         super();
-        
+
         this.likeIdField = likeValuesObject.likeIdField;
     }
     //#endregion
 
     //#region Public Methods
-    public create(reqBody: any): void {
+    public createTweetLike(reqBody: any): void {
         this.userId = reqBody.userId;
         this.tweetId = reqBody.tweetId;
 
         this.userIdIsNull();
         this.tweetIdIsNull();
+    }
+
+    public createCommentLike(reqBody: any): void {
+        this.userId = reqBody.userId;
+        this.commentId = reqBody.commentId;
+
+        this.userIdIsNull();
+        this.commentIdIsNull();
     }
 
     public setLikeId(reqParams: any): void {

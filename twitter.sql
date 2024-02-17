@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 12, 2024 at 03:57 AM
+-- Generation Time: Feb 17, 2024 at 03:57 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -32,6 +32,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `comment_exists` (IN `comment_id` IN
     	SELECT EXISTS(SELECT * FROM comments c WHERE c.comment_id = comment_id) AS comment_exists;
     ELSE
     	SELECT EXISTS(SELECT * FROM comments c WHERE c.comment_id = comment_id AND c.user_id = user_id) AS comment_exists;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `comment_like_exists` (IN `c_id` INT, IN `u_id` INT)   BEGIN
+	IF u_id IS NULL THEN
+    	SELECT EXISTS(SELECT * FROM likes l WHERE l.comment_id = c_id) AS like_exists;
+    ELSE
+    	SELECT EXISTS(SELECT * FROM likes l WHERE l.comment_id = c_id AND l.user_id = u_id) AS like_exists;
     END IF;
 END$$
 
@@ -98,6 +106,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_comment` (IN `comment_text` 
     VALUES(comment_text, user_id, tweet_id);
     
     SELECT c.comment_id, c.create_date FROM comments c WHERE c.comment_id = LAST_INSERT_ID();
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_comment_like` (IN `c_id` INT, IN `u_id` INT)   BEGIN
+	INSERT INTO likes (comment_id, user_id)
+    VALUES (c_id, u_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet` (IN `tweet_text` VARCHAR(255), IN `user_id` INT)   BEGIN
