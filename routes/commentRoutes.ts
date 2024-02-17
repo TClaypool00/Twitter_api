@@ -63,7 +63,7 @@ router.put('/:id', authenticateToken, async (req, resp) => {
             return;
         }
 
-        if (!await commentExists(comment)) {
+        if (!await commentExists(Number(comment.commentId))) {
             resp.status(400)
             .json(getStatus(commentValuesObject.doesNotExistMessage));
 
@@ -96,7 +96,7 @@ router.get('/:id', authenticateToken, async (req, resp) => {
             return;
         }
 
-        if (!await commentExists(comment)) {
+        if (!await commentExists(Number(comment.commentId))) {
             resp.status(404)
             .json(getStatus(commentValuesObject.doesNotExistMessage));
 
@@ -174,7 +174,7 @@ router.delete('/:id', authenticateToken, async (req, resp) => {
             return
         }
 
-        if (!await commentExists(comment)) {
+        if (!await commentExists(Number(comment.commentId))) {
             resp.status(400)
             .json(getStatus(commentValuesObject.doesNotExistMessage));
 

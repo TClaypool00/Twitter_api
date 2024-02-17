@@ -4,6 +4,8 @@ import { currentUser } from "../helpers/jwtHelper";
 import { generateGetAllSql, getAllSql, getallParams } from "../helpers/serviceHelper";
 import { commentValuesObject, maxLengthsObject } from "../helpers/valuesHelper";
 import Comment from "../models/Comment";
+import Like from "../models/Like";
+import ModelHelper from "../models/ModelHelper";
 
 const connection = connect();
 
@@ -27,8 +29,8 @@ export async function updateComment(comment:Comment) : Promise<Comment> {
     return comment;
 }
 
-export async function commentExists(comment:Comment) : Promise<Boolean> {
-    let [exists] = await connection.query('call comment_exists(?, ?)', [comment.commentId, comment.userId]);
+export async function commentExists(commentId: number, userId: number | null = null) : Promise<Boolean> {
+    let [exists] = await connection.query('call comment_exists(?, ?)', [commentId, userId]);
     let jsonObject = getJSONObject(exists);
     jsonObject = jsonObject[0][0];
 
