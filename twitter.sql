@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 18, 2024 at 07:13 AM
+-- Generation Time: Feb 18, 2024 at 07:53 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -142,9 +142,22 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet_like` (IN `user_Id` IN
     VALUES (user_id, tweet_id);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_user` (IN `username` VARCHAR(255), IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `phone_number` VARCHAR(255))   INSERT INTO users
-(username, first_name, last_name, email, password, phone_number)
-VALUES (username, first_name, last_name, email, password, phone_number)$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_user` (IN `username` VARCHAR(255), IN `first_name` VARCHAR(255), IN `last_name` VARCHAR(255), IN `email` VARCHAR(255), IN `password` VARCHAR(255), IN `phone_number` VARCHAR(255))   BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    	ROLLBACK;
+    END;
+    
+    START TRANSACTION;
+    INSERT INTO profiles (about_me)
+    VALUES (NULL);
+    
+    INSERT INTO users
+    (username, first_name, last_name, email, password, phone_number, profile_id)
+	VALUES (username, first_name, last_name, email, password, phone_number, LAST_INSERT_ID());
+    
+    COMMIT;
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `like_exists` (IN `l_id` INT, IN `u_id` INT)   BEGIN
 	IF u_id IS NULL THEN
@@ -217,7 +230,28 @@ CREATE TABLE IF NOT EXISTS `comments` (
   PRIMARY KEY (`comment_id`),
   KEY `user_id` (`user_id`),
   KEY `tweet_id` (`tweet_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `genders`
+--
+
+CREATE TABLE IF NOT EXISTS `genders` (
+  `gender_id` int(11) NOT NULL AUTO_INCREMENT,
+  `gender_name` varchar(255) NOT NULL,
+  `pronoun_1` varchar(255) NOT NULL,
+  `pronoun_2` varchar(255) NOT NULL,
+  PRIMARY KEY (`gender_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `genders`
+--
+
+INSERT INTO `genders` (`gender_id`, `gender_name`, `pronoun_1`, `pronoun_2`) VALUES
+(1, 'Male', 'He', 'Him');
 
 -- --------------------------------------------------------
 
@@ -235,7 +269,23 @@ CREATE TABLE IF NOT EXISTS `likes` (
   KEY `user_id` (`user_id`),
   KEY `tweet_id` (`tweet_id`),
   KEY `comment_id` (`comment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `profiles`
+--
+
+CREATE TABLE IF NOT EXISTS `profiles` (
+  `profile_id` int(11) NOT NULL AUTO_INCREMENT,
+  `about_me` varchar(255) DEFAULT NULL,
+  `middle_name` varchar(255) DEFAULT NULL,
+  `birth_date` datetime DEFAULT NULL,
+  `gender_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`profile_id`),
+  KEY `gender_id` (`gender_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -266,7 +316,7 @@ CREATE TABLE IF NOT EXISTS `tweets` (
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`tweet_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -283,8 +333,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(255) NOT NULL,
   `phone_number` varchar(10) NOT NULL,
   `date_created` date NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `profile_id` int(11) NOT NULL,
+  PRIMARY KEY (`user_id`),
+  KEY `profile_id` (`profile_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -360,6 +412,12 @@ ALTER TABLE `likes`
   ADD CONSTRAINT `likes_ibfk_3` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`);
 
 --
+-- Constraints for table `profiles`
+--
+ALTER TABLE `profiles`
+  ADD CONSTRAINT `profiles_ibfk_1` FOREIGN KEY (`gender_id`) REFERENCES `genders` (`gender_id`);
+
+--
 -- Constraints for table `refresh_tokens`
 --
 ALTER TABLE `refresh_tokens`
@@ -370,6 +428,12 @@ ALTER TABLE `refresh_tokens`
 --
 ALTER TABLE `tweets`
   ADD CONSTRAINT `tweets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`profile_id`) REFERENCES `profiles` (`profile_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
