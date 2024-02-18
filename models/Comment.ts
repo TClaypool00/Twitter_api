@@ -48,6 +48,7 @@ export default class Comment extends ModelHelper {
     }
 
     public getAll(reqQuery: any ) {
+        //TODO: make all search by query "search"
         if (typeof reqQuery.commentText !== 'undefined') {
             this.search = `%${String(reqQuery.commentText)}%`;
         }

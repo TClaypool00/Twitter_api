@@ -116,6 +116,7 @@ router.get('/:id', authenticateToken, async (req, resp) => {
 
 //TODO: sort by by like count
 //TODO: sort by liked
+//TODO: add include replies (stretch goal)
 router.get('/', authenticateToken, async (req, resp) => {
     try {
         let comment = new Comment();
@@ -154,6 +155,7 @@ router.get('/', authenticateToken, async (req, resp) => {
 
         //TODO: Logic can be better
         if (typeof comment.tweetId === 'number') {
+            //TODO: Put logic in the get comments stored proc
             let commentCount: number = await getCommentCountByTweetId(comment.tweetId);
             if (commentCount > 0) {
                 if (typeof comment.index === 'number' && comment.index > 0) {

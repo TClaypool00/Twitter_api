@@ -110,6 +110,7 @@ router.get('/:id', authenticateToken, async (req, resp) => {
 
 //TODO: sort by by like count
 //TODO: sort by liked
+//TODO: add include comments
 router.get('/', authenticateToken, async (req, resp) => {
     try {
         let tweet : Tweet = new Tweet();
