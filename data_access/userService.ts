@@ -4,7 +4,7 @@ import { getJSONObject } from '../helpers/jsonHelper';
 const connection = connect();
 
 //#region Database methods
-export async function insertUser(user: User) : Promise<Number> {
+export async function insertUser(user: User) : Promise<number> {
     let [newUser] = await connection.query('call insert_user(?, ?, ?, ?, ?, ?)', [user.userName, user.firstName, user.lastName, user.email, user.password, user.phoneNumber]);
 
     let jsonObject = getJSONObject(newUser);
@@ -38,12 +38,14 @@ export async function phoneNumberExists(phoneNumber : string, userId: number | n
     return Boolean(jsonObject[0][0].phone_number_exists);
 }
 
-export async function getUserByEmail(email: string) : Promise<any> {
-    const user = await connection.query('call get_single_user_by_email(?)', [email]);
+export async function getUserByEmail(user: User) : Promise<User> {
+    const [dataUser] = await connection.query('call get_single_user_by_email(?)', [user.email]);
+    let jsonObject = getJSONObject(dataUser);;
 
-    let jsonObject = getJSONObject(user);
+    user.getUser(jsonObject);
 
-    return jsonObject[0][0][0];
+
+    return user;
 }
 
 

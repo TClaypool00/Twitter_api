@@ -67,9 +67,11 @@ router.post('/', async (req, resp) => {
 
                 user.password = hash;
 
-                if (await insertUser(user) === 1) {
+                if (await insertUser(user) > 0) {
                     resp.status(200)
                 .json(getStatus(userValuesObject.createdOKMessage));    
+                } else {
+                    throw userValuesObject.created500ErrorMessage;
                 }
             });
         });
@@ -81,37 +83,36 @@ router.post('/', async (req, resp) => {
 });
 
 router.post('/login', async (req, resp) => {
-    let apiUser = new User();
-    apiUser.email = req.body.email;
-    apiUser.password = req.body.password;
+    let user = new User();
+    user.email = req.body.email;
+    user.password = req.body.password;
 
-    apiUser.validateLoginInfo();
+    user.validateLoginInfo();
 
-    if (!emailValidator.validate(String(apiUser.email))) {
+    if (!emailValidator.validate(String(user.email))) {
         resp.status(400)
         .json(getStatus(errorsObject.invalidEmailError));
 
         return;
     }
 
-    if (!emailExists(String(apiUser.email))) {
+    if (!emailExists(String(user.email))) {
         resp.status(404)
         .json(getStatus(userValuesObject.emailExistsMessage))
     }
 
-    const user = await getUserByEmail(String(apiUser.email));
-    apiUser.password = user.password;
+    user = await getUserByEmail(user);
 
-    apiUser.getUser(user);
-
-    if (!await bcrypt.compare(req.body.password, String(apiUser.password))) {
+    if (!await bcrypt.compare(req.body.password, String(user.password))) {
         resp.status(400)
         .json(getStatus(passwordValuesObject.incorrectPassswordMessage));
+
+        return;
     }
 
-    apiUser.password = '';
+    user.password = '';
 
-    const token = generateToken(apiUser);
+    const token = generateToken(user);
 
     resp.status(200)
     .send(getStatus(userObject(user, token)));

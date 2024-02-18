@@ -24,6 +24,7 @@ export default class User {
     public confirmPassword: string | null | undefined;
     public phoneNumber : string | undefined | null;
     public errors : [string] = [''];
+    public roles: [string] = [''];
     //#endregion
 
     //#region  Constructor
@@ -38,6 +39,7 @@ export default class User {
         this.maxLength = maxLengthsObject.defaultStringMaxLength;
 
         this.errors.splice(0, 1);
+        this.roles.splice(0, 1);
     }
     //#endregion
 
@@ -64,15 +66,20 @@ export default class User {
         this.validateEmail();
     }
 
-    public getUser(userObject: any) : void {
-        this.userId = userObject.user_id;
-        this.userName = userObject.username;
-        this.firstName = userObject.first_name;
-        this.lastName = userObject.last_name;
-        this.email = userObject.email;
-        this.phoneNumber = userObject.phone_number;
-        this.password = userObject.password;
-        
+    public getUser(data: any) : void {
+        let userData = data[0][0];
+        this.userId = userData.user_id;
+        this.userName = userData.username;
+        this.firstName = userData.first_name;
+        this.lastName = userData.last_name;
+        this.email = userData.email;
+        this.phoneNumber = userData.phone_number;
+        this.password = userData.password;
+
+        let roleData = data[1];
+        for (let i = 0; i < roleData.length; i++) {
+            this.roles.push(roleData[i].role_name);
+        }
     }
     //#endregion
 

@@ -1,5 +1,6 @@
 import Comment from "../models/Comment";
 import Tweet from "../models/Tweet";
+import User from "../models/User";
 
 export function requiredIsNull(value : string | undefined | null) : boolean {
     return value === null || value === undefined || value === '';
@@ -13,13 +14,13 @@ export function valueExceedsLength(value: string, length: number) : boolean {
     return value.length > length;
 }
 
-export function userObject(user: any, token: string = '', refreshToken: string = '') : object {
+export function userObject(user: User, token: string = '', refreshToken: string = '') : any {
     return {
-        userId: user.user_id,
-        firstName: user.first_name,
-        lastName: user.last_name,
+        userId: user.userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
-        phoneNum: user.phone_number,
+        phoneNum: user.phoneNumber,
         token: token,
         refreshToken: refreshToken
     }
