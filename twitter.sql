@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 18, 2024 at 07:53 AM
+-- Generation Time: Feb 18, 2024 at 11:46 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -105,9 +105,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `get_comment_count_by_tweet_id` (IN 
     LIMIT 0, 1;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_single_user_by_email` (IN `email` VARCHAR(255))   SELECT * FROM users u
-WHERE LOWER(u.email) = LOWER(email)
-LIMIT 1$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_single_user_by_email` (IN `email` VARCHAR(255))   BEGIN
+	DECLARE user_id INT;
+    
+    SELECT u.user_id 
+    INTO user_id
+    FROM users u
+	WHERE LOWER(u.email) = LOWER(email)
+	LIMIT 0, 1;
+    
+	SELECT * FROM users u
+	WHERE LOWER(u.email) = LOWER(email)
+	LIMIT 0, 1;
+    
+    SELECT r.role_name FROM vw_user_roles r
+    WHERE r.user_id = user_id;
+
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_tweet_by_id` (IN `tweet_id` INT, IN `user_id` INT)   BEGIN
 	SELECT t.*, EXISTS(SELECT * FROM likes l WHERE l.tweet_id = tweet_id AND l.user_id = user_id) AS liked FROM vw_tweets t WHERE t.tweet_id = tweet_id
@@ -285,7 +299,7 @@ CREATE TABLE IF NOT EXISTS `profiles` (
   `gender_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`profile_id`),
   KEY `gender_id` (`gender_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -301,6 +315,28 @@ CREATE TABLE IF NOT EXISTS `refresh_tokens` (
   PRIMARY KEY (`refresh_token_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `roles`
+--
+
+CREATE TABLE IF NOT EXISTS `roles` (
+  `role_id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_name` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `create_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `update_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`role_id`, `role_name`, `description`, `create_date`, `update_date`) VALUES
+(1, 'Admin', 'This role will have CRUD rights to everything.', '2024-02-18 12:42:24', NULL);
 
 -- --------------------------------------------------------
 
@@ -336,7 +372,24 @@ CREATE TABLE IF NOT EXISTS `users` (
   `profile_id` int(11) NOT NULL,
   PRIMARY KEY (`user_id`),
   KEY `profile_id` (`profile_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_roles`
+--
+
+CREATE TABLE IF NOT EXISTS `user_roles` (
+  `user_role_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `create_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `update_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_role_id`),
+  KEY `user_id` (`user_id`),
+  KEY `role_id` (`role_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -377,6 +430,24 @@ CREATE TABLE IF NOT EXISTS `vw_tweets` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `vw_user_roles`
+-- (See below for the actual view)
+--
+CREATE TABLE IF NOT EXISTS `vw_user_roles` (
+`user_role_id` int(11)
+,`role_id` int(11)
+,`role_name` varchar(255)
+,`description` varchar(255)
+,`user_id` int(11)
+,`first_name` varchar(255)
+,`last_name` varchar(255)
+,`create_date` datetime
+,`update_date` datetime
+);
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `vw_comments`
 --
 DROP TABLE IF EXISTS `vw_comments`;
@@ -391,6 +462,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 DROP TABLE IF EXISTS `vw_tweets`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `t`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count`, count(`c`.`comment_id`) AS `comment_count` FROM (((`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`)) left join `likes` `l` on(`t`.`tweet_id` = `l`.`tweet_id`)) left join `comments` `c` on(`t`.`tweet_id` = `c`.`tweet_id`)) GROUP BY 11  ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vw_user_roles`
+--
+DROP TABLE IF EXISTS `vw_user_roles`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_user_roles`  AS SELECT `ur`.`user_role_id` AS `user_role_id`, `ur`.`role_id` AS `role_id`, `r`.`role_name` AS `role_name`, `r`.`description` AS `description`, `u`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, `ur`.`create_date` AS `create_date`, `ur`.`update_date` AS `update_date` FROM ((`user_roles` `ur` join `users` `u` on(`ur`.`user_id` = `u`.`user_id`)) join `roles` `r` on(`ur`.`role_id` = `r`.`role_id`))  ;
 
 --
 -- Constraints for dumped tables
@@ -434,6 +514,13 @@ ALTER TABLE `tweets`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`profile_id`) REFERENCES `profiles` (`profile_id`);
+
+--
+-- Constraints for table `user_roles`
+--
+ALTER TABLE `user_roles`
+  ADD CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

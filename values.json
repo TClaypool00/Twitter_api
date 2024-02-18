@@ -30,7 +30,8 @@
             "emailExists": "Email address already exists",
             "emailDoesNotExists" : "Eamil address does not exist",
             "phoneNumberExists": "Phone number already exists",
-            "usernameExists": "Username already exists"
+            "usernameExists": "Username already exists",
+            "cteatedError": "Could not complete registeration"
         }
     },
     "tweet" : {
@@ -104,5 +105,13 @@
     },
     "global" : {
         "index" : "Index"
+    },
+    "roles" : {
+        "admin": "Admin",
+        "dev": "Developer",
+        "errors": {
+            "admin": "Only admins have access to this route",
+            "dev": "Only developers have access to this route"
+        }
     }
 }

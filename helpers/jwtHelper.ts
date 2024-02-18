@@ -1,7 +1,8 @@
 import * as jwt from 'jsonwebtoken'
 import User from '../models/User';
-import { jwtValuesObject } from './valuesHelper';
+import { jwtValuesObject, rolesValuesObject } from './valuesHelper';
 import { getStatus } from './globalFunctions';
+import { isAdmin } from './rolesHelper';
 require('dotenv').config();
 
 const secretKeyEnv = String(process.env.SECRET_KEY);
@@ -12,7 +13,8 @@ var currentUser = {
     firstName: '',
     lastName: '',
     email: '',
-    phonenum: ''
+    phonenum: '',
+    roles: ['']
 }
 
 export function generateToken(user: User, isRefreshToken : boolean = false) : string {
@@ -21,6 +23,10 @@ export function generateToken(user: User, isRefreshToken : boolean = false) : st
     currentUser.lastName = String(user.lastName);
     currentUser.email = String(user.email);
     currentUser.phonenum = String(user.phoneNumber);
+
+    for (let i = 0; i < user.roles.length; i++) {
+        currentUser.roles.push(user.roles[i]);
+    }
     
     if (!isRefreshToken) {
         const options = {
@@ -54,6 +60,17 @@ export function authenticateToken(req : any, resp : any, next: any) : any {
     }
 
     currentUser = result.data;
+
+    next();
+}
+
+export function authenticateAdminRole(req: any, resp: any, next: any): any {
+    if (!isAdmin()) {
+        resp.status(403)
+        .json(getStatus(rolesValuesObject.adminRoleError));
+
+        return;
+    }
 
     next();
 }

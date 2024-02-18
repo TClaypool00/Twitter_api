@@ -31,7 +31,8 @@ const userValuesObject = {
     emailExistsMessage: values.user.errors.emailExists,
     phoneNumberExistsMessage: values.user.errors.phoneNumberExists,
     usernameExistsMessage: values.user.errors.usernameExists,
-    emailDoesNotExistsMessage: values.user.errors.emailDoesNotExists
+    emailDoesNotExistsMessage: values.user.errors.emailDoesNotExists,
+    created500ErrorMessage: values.user.errors.createdError
 }
 
 const passwordValuesObject = {
@@ -95,6 +96,13 @@ const globalValuesObject = {
     indexField: values.global.index
 }
 
+const rolesValuesObject = {
+    adminRole: values.roles.admin,
+    devRole: values.roles.dev,
+    adminRoleError: values.roles.errors.admin,
+    devRoleError: values.roles.errors.dev
+};
+
 export function requiredValue(name : string) : string {
     return  `${name} ${errorsObject.requiredError}`;
 }
@@ -117,5 +125,6 @@ export {
     tweetValuesObject,
     globalValuesObject,
     likeValuesObject,
-    commentValuesObject
+    commentValuesObject,
+    rolesValuesObject
 }
