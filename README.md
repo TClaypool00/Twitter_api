@@ -9,11 +9,8 @@
 ### Creating the Twitter database
 1. Click the "Start" button beside "Apache" and "MySQL".
 2. Click the "Admin" button beside "MySQL", it will take you to the phpMyAdmin website.
-3. Click the "New" link  on the left sidebar
-4. Type "twitter" (not case-sensitive) in the "Database name" textbox.
-5. Click the "Create" button
-6. Copy contents from "twitter.sql" file and paste into the "SQL" tab.
-7. Click the "Go" button.
+3. Copy contents from "twitter.sql" file and paste into the "SQL" tab. (The script will create the Twitter database :) )
+4. Click the "Go" button.
 
 ### Download the source code
 1. Either download or clone the git repository to the local machine.
