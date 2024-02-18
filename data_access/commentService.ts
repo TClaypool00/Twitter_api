@@ -73,3 +73,11 @@ export async function getComments(comment:Comment, limitValue: number) : Promise
 
     return comments;
 }
+
+export async function getCommentCountByTweetId(tweetId: number): Promise<number> {
+    let [count] = await connection.query('call get_comment_count_by_tweet_id(?)', [tweetId]);
+    let jsonObject = getJSONObject(count);
+    jsonObject = jsonObject[0][0];
+
+    return Number(jsonObject.comment_count);
+}

@@ -46,10 +46,18 @@ export function commentObject(comment: Comment, status: string = '') {
         commentText: comment.commentText,
         createDate: comment.createDateString,
         isEdited: comment.isEdited,
+        tweetId: comment.tweetId,
         userId: comment.userId,
         userDisplayName: comment.userDisplayName,
         likeCount: comment.likeCount,
         liked: comment.liked,
         status: status
+    };
+}
+
+export function commentObjectWithCommentCount(comments: any, commentCount: number) {
+    return {
+        comments: comments,
+        commentCount: commentCount
     };
 }

@@ -3,8 +3,8 @@ import { getStatus } from '../helpers/globalFunctions';
 import Comment from '../models/Comment';
 import { authenticateToken, currentUser, validateUserId } from '../helpers/jwtHelper';
 import { commentValuesObject, jwtValuesObject, maxLengthsObject } from '../helpers/valuesHelper';
-import { commentExists, deleteComment, getComment, getComments, insertComment, updateComment } from '../data_access/commentService';
-import { commentObject } from '../helpers/modelHelper';
+import { commentExists, deleteComment, getComment, getCommentCountByTweetId, getComments, insertComment, updateComment } from '../data_access/commentService';
+import { commentObject, commentObjectWithCommentCount } from '../helpers/modelHelper';
 
 const router = express.Router();
 
@@ -152,9 +152,33 @@ router.get('/', authenticateToken, async (req, resp) => {
             jsonComments.push(commentObject(comment));
         }
 
-        resp.status(200)
-        .json(getStatus(jsonComments));
+        //TODO: Logic can be better
+        if (typeof comment.tweetId === 'number') {
+            let commentCount: number = await getCommentCountByTweetId(comment.tweetId);
+            if (commentCount > 0) {
+                if (typeof comment.index === 'number' && comment.index > 0) {
+                    let indexValue = comment.index * maxLengthsObject.standardTakeValue;
 
+                    if (commentCount - indexValue > 0) {
+                        commentCount -= indexValue;
+                    } else {
+                        commentCount = 0;
+                    }
+                } else {
+                    if (commentCount - comments.length > 0) {
+                        commentCount -= comments.length;
+                    } else {
+                        commentCount = 0;
+                    }
+                }
+            }
+
+            resp.status(200)
+            .json(getStatus(commentObjectWithCommentCount(jsonComments, commentCount)));
+        } else {
+            resp.status(200)
+            .json(getStatus(jsonComments));
+        }
     } catch (error: any) {
         resp.status(500)
         .json(getStatus(error));

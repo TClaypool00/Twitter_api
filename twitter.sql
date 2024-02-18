@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 18, 2024 at 05:17 AM
+-- Generation Time: Feb 18, 2024 at 07:13 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -97,6 +97,12 @@ END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_comment_by_id` (IN `c_id` INT, IN `u_id` INT)   BEGIN
 	SELECT c.*, EXISTS(SELECT * FROM likes l WHERE l.user_id = u_id AND l.comment_id = c_id) AS liked FROM vw_comments c WHERE c.comment_id = c_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_comment_count_by_tweet_id` (IN `t_id` INT)   BEGIN
+	SELECT t.comment_count FROM vw_tweets t
+    WHERE t.tweet_id = t_id
+    LIMIT 0, 1;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_single_user_by_email` (IN `email` VARCHAR(255))   SELECT * FROM users u
