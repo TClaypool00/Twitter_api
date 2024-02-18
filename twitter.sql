@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 17, 2024 at 05:17 PM
+-- Generation Time: Feb 18, 2024 at 05:17 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -313,6 +313,7 @@ CREATE TABLE IF NOT EXISTS `vw_tweets` (
 ,`first_name` varchar(255)
 ,`last_name` varchar(255)
 ,`like_count` bigint(21)
+,`comment_count` bigint(21)
 );
 
 -- --------------------------------------------------------
@@ -331,7 +332,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vw_tweets`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `t`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count` FROM ((`tweets` `t` left join `likes` `l` on(`t`.`tweet_id` = `l`.`tweet_id`)) join `users` `u` on(`u`.`user_id` = `t`.`user_id`)) GROUP BY 11  ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `t`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count`, count(`c`.`comment_id`) AS `comment_count` FROM (((`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`)) left join `likes` `l` on(`t`.`tweet_id` = `l`.`tweet_id`)) left join `comments` `c` on(`t`.`tweet_id` = `c`.`tweet_id`)) GROUP BY 11  ;
 
 --
 -- Constraints for dumped tables

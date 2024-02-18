@@ -9,6 +9,7 @@ export default class Tweet extends ModelHelper {
 
     //#region Public Properites
     public tweetText: string | undefined | null;
+    public commentCount: number;
     //#endregion
 
     //#region  Constructors
@@ -20,6 +21,7 @@ export default class Tweet extends ModelHelper {
         this.tweetTextField = tweetValuesObject.tweetTextField;
 
         this.tweetText = null;
+        this.commentCount = 0;
     }
     //#endregion
 
@@ -100,6 +102,7 @@ export default class Tweet extends ModelHelper {
             this.datePublishedString = this.updateDateString;
         }
 
+        this.commentCount = data.comment_count;
     }
 
     public setDisplayName(): void {

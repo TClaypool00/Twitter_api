@@ -35,6 +35,7 @@ export function tweetObject(tweet: Tweet, status: string = '') {
         userDisplay: tweet.userDisplayName,
         likeCount: tweet.likeCount,
         liked: tweet.liked,
+        commentCount: tweet.commentCount,
         status: status
     }
 }
