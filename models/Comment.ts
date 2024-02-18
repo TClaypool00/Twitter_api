@@ -52,6 +52,14 @@ export default class Comment extends ModelHelper {
             this.search = `%${String(reqQuery.commentText)}%`;
         }
 
+        if (typeof reqQuery.tweetId !== 'undefined') {
+            if (isNaN(reqQuery.tweetId)) {
+                this.errors.push(notANumberValue(this.tweetIdField));
+            } else {
+                this.tweetId = Number(reqQuery.tweetId);
+            }
+        }
+
         this.subGetAll(reqQuery);
     }
 

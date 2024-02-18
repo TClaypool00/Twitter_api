@@ -48,6 +48,15 @@ export function generateGetAllSql(model: ModelHelper, table: string, likedSql: s
         whereClause += `${tableLetter}.update_date IS NOT NULL`;
     }
 
+    if (model.tweetId != null) {
+        if (whereClause !== '') {
+            whereClause += ' AND ';
+        }
+
+        whereClause += `${tableLetter}.tweet_id = ?`;
+        getallParams.push(model.tweetId);
+    }
+
     if (whereClause !== '') {
         getAllSql += ' WHERE ';
         getAllSql += whereClause;
