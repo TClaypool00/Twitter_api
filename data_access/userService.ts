@@ -12,7 +12,7 @@ export async function insertUser(user: User) : Promise<number> {
     return Number(jsonObject.affectedRows);
 }
 
-export async function emailExists(email: string, userId : number | null = null) : Promise<Boolean> {
+export async function emailExists(email: string, userId : number | null = null) : Promise<boolean> {
     const [exists] = await connection.query('call email_existts(?, ?)', [email, userId]);
     let jsonObject = getJSONObject(exists);
 
@@ -40,7 +40,8 @@ export async function phoneNumberExists(phoneNumber : string, userId: number | n
 
 export async function getUserByEmail(user: User) : Promise<User> {
     const [dataUser] = await connection.query('call get_single_user_by_email(?)', [user.email]);
-    let jsonObject = getJSONObject(dataUser);;
+    let jsonObject = getJSONObject(dataUser);
+    // console.log(jsonObject);
 
     user.getUser(jsonObject);
 

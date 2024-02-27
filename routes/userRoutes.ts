@@ -96,9 +96,11 @@ router.post('/login', async (req, resp) => {
         return;
     }
 
-    if (!emailExists(String(user.email))) {
+    if (!await emailExists(String(user.email))) {
         resp.status(404)
-        .json(getStatus(userValuesObject.emailExistsMessage))
+        .json(getStatus(userValuesObject.emailDoesNotExistsMessage));
+
+        return;
     }
 
     user = await getUserByEmail(user);
@@ -115,7 +117,7 @@ router.post('/login', async (req, resp) => {
     const token = generateToken(user);
 
     resp.status(200)
-    .send(getStatus(userObject(user, token)));
+    .json(getStatus(userObject(user, token)));
 });
 
 export default router;
