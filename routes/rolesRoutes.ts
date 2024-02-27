@@ -88,4 +88,7 @@ router.put('/:id', authenticateToken, authenticateToken, async (req, resp) => {
     }
 });
 
+//TODO: Add a get by id route (Show all people who are in the route)
+//TODO: Add get all route
+
 export default router;

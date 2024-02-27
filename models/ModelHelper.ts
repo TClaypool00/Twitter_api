@@ -4,6 +4,7 @@ import { globalValuesObject, requiredValue } from "../helpers/valuesHelper";
 import { userValuesObject, tweetValuesObject, commentValuesObject } from "../helpers/valuesHelper";
 import { errorsObject } from "../helpers/valuesHelper";
 
+//TODO Make code less redundant. i.e. create, update, setId etc.
 export default abstract class ModelHelper {
    //#region Public Properites
     public index: number | null;
