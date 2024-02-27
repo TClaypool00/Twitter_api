@@ -113,14 +113,16 @@
         "admin": "Admin",
         "dev": "Developer",
         "okMessages" : {
-            "created": "Role has been added!"
+            "created": "Role has been added!",
+            "updated": "Role has been updated!"
         },
         "errors": {
             "admin": "Only admins have access to this route",
             "dev": "Only developers have access to this route",
             "cteatedError": "Could not add role",
-            "": "Role name already exists",
-            "descriptionExists": "Role description already exists"
+            "nameExists": "Role name already exists",
+            "descriptionExists": "Role description already exists",
+            "roleNotFound": "Role does not exists"
         }
     }
 }

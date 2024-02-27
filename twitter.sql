@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 27, 2024 at 02:14 AM
+-- Generation Time: Feb 27, 2024 at 03:45 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -236,12 +236,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `update_comment` (IN `c_id` INT, IN 
     SELECT c.update_date FROM comments c WHERE c.comment_id = c_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_role` (IN `r_name` VARCHAR(255), IN `r_desc` VARCHAR(255), IN `r_id` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_role` (IN `r_desc` VARCHAR(255), IN `r_id` INT)   BEGIN
 	UPDATE roles
-    SET role_name = r_name, description = r_desc
+    SET description = r_desc
     WHERE role_id = r_id;
     
-    SELECT r.update_date FROM roles r WHERE role_id = r_id LIMIT 0, 1;
+    SELECT r.update_date, r.create_date FROM roles r WHERE role_id = r_id LIMIT 0, 1;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_tweet` (IN `tweet_id` INT, IN `tweet_text` VARCHAR(255))   BEGIN

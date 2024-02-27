@@ -107,7 +107,9 @@ const rolesValuesObject = {
     createdOKMessage: values.roles.okMessages.created,
     created500Message: values.roles.errors.createdError,
     nameExistsMessage: values.roles.errors.nameExists,
-    descriptionExistsMessage: values.roles.errors.descriptionExists
+    descriptionExistsMessage: values.roles.errors.descriptionExists,
+    notFoundMessage: values.roles.errors.roleNotFound,
+    updatedOKMessage: values.roles.okMessages.updated
 };
 
 export function requiredValue(name : string) : string {

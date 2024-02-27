@@ -1,5 +1,5 @@
-import { requiredIsNull, valueExceedsLength } from "../helpers/modelHelper";
-import { maxLenghValue, maxLengthsObject, requiredValue, rolesValuesObject } from "../helpers/valuesHelper";
+import { requiredIsNull, requiredNumberIsNull, valueExceedsLength } from "../helpers/modelHelper";
+import { maxLenghValue, maxLengthsObject, notANumberValue, requiredValue, rolesValuesObject } from "../helpers/valuesHelper";
 import ModelHelper from "./ModelHelper";
 
 export default class Role extends ModelHelper {
@@ -51,11 +51,29 @@ export default class Role extends ModelHelper {
         }
     }
 
+    public update(reqBody: any, id: any) {
+        this.create(reqBody);
+        this.roleId = id;
+
+        if (requiredNumberIsNull(this.roleId)) {
+            this.errors.push(requiredValue(this.roleIdField));
+        } else if (isNaN(Number(this.roleId))) {
+            this.errors.push(notANumberValue(this.roleIdField));
+        }
+    }
+
     public setCreateData(data: any): void {
         this.roleId = Number(data.role_id);
         this.createDate = new Date(String(data.create_date));
         this.setCreateDate();
         this.isEdited = false;
+    }
+
+    public setUpdateData(data: any): void {
+        this.updateDate = new Date(String(data.update_date));
+        this.createDate = new Date(String(data.create_date));
+        this.setCreateDate();
+        this.isEdited = true;
     }
     //#endregion
 }

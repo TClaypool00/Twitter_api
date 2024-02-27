@@ -37,3 +37,13 @@ export async function insertRole(role:Role) : Promise<Role> {
 
     return role;
 }
+
+export async function updateRole(role: Role): Promise<Role> {
+    const [dataRole] = await connection.query('call update_role(?, ?)', [role.description, role.roleId]);
+    let jsonObject = getJSONObject(dataRole);
+    jsonObject = jsonObject[0][0];
+
+    role.setUpdateData(jsonObject);
+
+    return role;
+}
