@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 18, 2024 at 11:46 PM
+-- Generation Time: Feb 27, 2024 at 02:14 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -140,6 +140,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_comment_like` (IN `c_id` INT
     VALUES (c_id, u_id);
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_role` (IN `r_name` VARCHAR(255), IN `r_description` VARCHAR(255))   BEGIN
+	INSERT INTO roles (role_name, description)
+    VALUES (r_name, r_description);
+    
+    SELECT r.role_id, r.create_date FROM roles r WHERE r.role_id = LAST_INSERT_ID();
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet` (IN `tweet_text` VARCHAR(255), IN `user_id` INT)   BEGIN
 	DECLARE tweet_id INT;
 
@@ -189,6 +196,26 @@ ELSE
 END IF;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `role_description_exists` (IN `r_desc` VARCHAR(255), IN `r_id` INT)   BEGIN
+	IF r_id IS NULL THEN
+    	SELECT(EXISTS(SELECT * FROM roles WHERE description = r_desc)) AS role_description_exists;
+    ELSE
+    	SELECT(EXISTS(SELECT * FROM roles WHERE description = r_desc AND role_id = r_id)) AS role_description_exists;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `role_exists_by_id` (IN `r_id` INT)   BEGIN
+	SELECT(EXISTS(SELECT * FROM roles WHERE role_id = r_id)) AS role_exists_by_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `role_name_exists` (IN `r_name` VARCHAR(255), IN `r_id` INT)   BEGIN
+	IF r_id IS NULL THEN
+    	SELECT(EXISTS(SELECT * FROM roles WHERE role_name = r_name)) AS role_exists;
+    ELSE
+    	SELECT(EXISTS(SELECT * FROM roles WHERE role_name = r_name AND role_id = r_id)) AS role_exists;
+    END IF;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `tweet_exists` (IN `tweet_id` INT, IN `user_id` INT)   BEGIN
 	IF user_id IS NULL THEN
     	SELECT EXISTS(SELECT * FROM tweets t WHERE t.tweet_id = tweet_id) AS tweet_exists;
@@ -207,6 +234,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `update_comment` (IN `c_id` INT, IN 
     WHERE comment_id = c_id;
     
     SELECT c.update_date FROM comments c WHERE c.comment_id = c_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_role` (IN `r_name` VARCHAR(255), IN `r_desc` VARCHAR(255), IN `r_id` INT)   BEGIN
+	UPDATE roles
+    SET role_name = r_name, description = r_desc
+    WHERE role_id = r_id;
+    
+    SELECT r.update_date FROM roles r WHERE role_id = r_id LIMIT 0, 1;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_tweet` (IN `tweet_id` INT, IN `tweet_text` VARCHAR(255))   BEGIN
@@ -299,7 +334,7 @@ CREATE TABLE IF NOT EXISTS `profiles` (
   `gender_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`profile_id`),
   KEY `gender_id` (`gender_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -329,14 +364,15 @@ CREATE TABLE IF NOT EXISTS `roles` (
   `create_date` datetime NOT NULL DEFAULT current_timestamp(),
   `update_date` datetime DEFAULT NULL,
   PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `roles`
 --
 
 INSERT INTO `roles` (`role_id`, `role_name`, `description`, `create_date`, `update_date`) VALUES
-(1, 'Admin', 'This role will have CRUD rights to everything.', '2024-02-18 12:42:24', NULL);
+(1, 'Admin', 'This role will have CRUD rights to everything.', '2024-02-18 12:42:24', NULL),
+(2, 'Developer', 'This role is for developers', '2024-02-26 19:08:25', NULL);
 
 -- --------------------------------------------------------
 
@@ -372,7 +408,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `profile_id` int(11) NOT NULL,
   PRIMARY KEY (`user_id`),
   KEY `profile_id` (`profile_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -389,7 +425,7 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   PRIMARY KEY (`user_role_id`),
   KEY `user_id` (`user_id`),
   KEY `role_id` (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 

@@ -1,4 +1,5 @@
 import Comment from "../models/Comment";
+import Role from "../models/Role";
 import Tweet from "../models/Tweet";
 import User from "../models/User";
 
@@ -61,4 +62,15 @@ export function commentObjectWithCommentCount(comments: any, commentCount: numbe
         comments: comments,
         commentCount: commentCount
     };
+}
+
+export function roleObject(role: Role, status: string = '') {
+    return {
+        roleId: role.roleId,
+        rolName: role.roleName,
+        roleDescription: role.description,
+        createdDate: role.createDateString,
+        isEdited: role.isEdited,
+        status: status
+    }
 }
