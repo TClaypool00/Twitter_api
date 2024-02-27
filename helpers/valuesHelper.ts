@@ -100,7 +100,14 @@ const rolesValuesObject = {
     adminRole: values.roles.admin,
     devRole: values.roles.dev,
     adminRoleError: values.roles.errors.admin,
-    devRoleError: values.roles.errors.dev
+    devRoleError: values.roles.errors.dev,
+    roleId: values.roles.roleId,
+    roleName: values.roles.roleName,
+    description: values.roles.description,
+    createdOKMessage: values.roles.okMessages.created,
+    created500Message: values.roles.errors.createdError,
+    nameExistsMessage: values.roles.errors.nameExists,
+    descriptionExistsMessage: values.roles.errors.descriptionExists
 };
 
 export function requiredValue(name : string) : string {

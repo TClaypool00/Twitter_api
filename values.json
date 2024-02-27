@@ -107,11 +107,20 @@
         "index" : "Index"
     },
     "roles" : {
+        "roleId": "Role id",
+        "roleName": "Role name",
+        "description": "Description",
         "admin": "Admin",
         "dev": "Developer",
+        "okMessages" : {
+            "created": "Role has been added!"
+        },
         "errors": {
             "admin": "Only admins have access to this route",
-            "dev": "Only developers have access to this route"
+            "dev": "Only developers have access to this route",
+            "cteatedError": "Could not add role",
+            "": "Role name already exists",
+            "descriptionExists": "Role description already exists"
         }
     }
 }
