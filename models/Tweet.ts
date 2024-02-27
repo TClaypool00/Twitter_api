@@ -46,6 +46,8 @@ export default class Tweet extends ModelHelper {
         if (requiredNumberIsNull(this.tweetId)) {
             this.errors.push(errorsObject.idGreaterThanZeroMessage);
         }
+
+        //TODO: Is number
     }
 
     public getAll(reqQuery: any) {
