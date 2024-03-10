@@ -41,7 +41,6 @@ export async function phoneNumberExists(phoneNumber : string, userId: number | n
 export async function getUserByEmail(user: User) : Promise<User> {
     const [dataUser] = await connection.query('call get_single_user_by_email(?)', [user.email]);
     let jsonObject = getJSONObject(dataUser);
-    // console.log(jsonObject);
 
     user.getUser(jsonObject);
 
