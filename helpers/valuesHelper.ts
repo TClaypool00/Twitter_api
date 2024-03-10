@@ -9,7 +9,8 @@ const errorsObject = {
     idGreaterThanZeroMessage: values.errors.idGreaterThanZero,
     dateMessage: values.errors.date,
     notBooleanMessage : values.errors.notBoolean,
-    notNumberMessage: values.errors.notNumber
+    notNumberMessage: values.errors.notNumber,
+    cannotBeNullMessage: values.errors.cannotBeNull
 }
 
 const maxLengthsObject = {
@@ -112,6 +113,25 @@ const rolesValuesObject = {
     updatedOKMessage: values.roles.okMessages.updated
 };
 
+const picturesValuesObject = {
+    pictureIdField: values.pictures.pictureId,
+    picturePathField: values.pictures.picturePath,
+    captionTextField: values.pictures.captionText,
+    profilePictureField: values.pictures.profilePicture,
+    coverPictureField: values.pictures.coverPicture
+};
+
+const booleanValuesObject = {
+    stringError: values.boolean.errors.stringValues,
+    numberError: values.boolean.errors.numberValue,
+    notAcceptedMessage: values.boolean.errors.notAccepted
+};
+
+const fileValuesObject = {
+    tweetFolder: values.file.tweetFolder,
+    notFoundMessage: values.file.errors.notFound
+}
+
 export function requiredValue(name : string) : string {
     return  `${name} ${errorsObject.requiredError}`;
 }
@@ -122,6 +142,10 @@ export function maxLenghValue(name : string, maxLengh : number) : string {
 
 export function notANumberValue(name: string) : string {
     return `${name} ${errorsObject.notNumberMessage}`;
+}
+
+export function notBooleanValue(name: string): string {
+    return `${name}${errorsObject.notBooleanMessage}`;
 }
 
 export {
@@ -135,5 +159,8 @@ export {
     globalValuesObject,
     likeValuesObject,
     commentValuesObject,
-    rolesValuesObject
+    rolesValuesObject,
+    picturesValuesObject,
+    booleanValuesObject,
+    fileValuesObject
 }

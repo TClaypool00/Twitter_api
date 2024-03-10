@@ -7,7 +7,8 @@
         "idGreaterThanZero": " must be greater than zero",
         "date": " not a valid date",
         "notBoolean": " must be a boolean type (true or false)",
-        "notNumber" : " must a whole number"
+        "notNumber" : " must a whole number",
+        "cannotBeNull": "Value cannot be null"
     },
     "maxLengths" : {
         "stringMaxLength" : 255,
@@ -124,5 +125,38 @@
             "descriptionExists": "Role description already exists",
             "roleNotFound": "Role does not exists"
         }
+    },
+    "pictures": {
+        "pictureId": "Picture id",
+        "picturePath": "Picture path",
+        "captionText": "Caption text",
+        "profilePicture": "Profile picture",
+        "coverPicture": "Cover picture",
+        "okMessages": {
+            "created": "Picture has been added!",
+            "updated": "Picture has been updated!"
+        },
+        "errors": {
+            "doesNotExist": "The picture does not exists.",
+            "differentLength": "File length and caption text length must be the same"
+        }
+    },
+    "tables": {
+        "user": "user",
+        "tweet": "tweet"
+    },
+    "boolean": {
+        "errors":{
+            "stringValues": "Value can only be true or false",
+            "numberValue": "Value can only 1 or 0",
+            "notAccepted": " is not an accted value"
+        }
+    },
+    "file": {
+        "tweetFolder": "tweet",
+        "errors": {
+            "notFound": "The path you are requesting does not exist"
+        }
     }
+    
 }
