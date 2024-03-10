@@ -7,6 +7,7 @@ import tweetRoutes from './routes/tweetRoutes';
 import likeRoutes from './routes/likeRoutes';
 import commentRoutes from './routes/commentRoutes';
 import rolesRoutes from './routes/rolesRoutes';
+import pictureRoutes from './routes/pictureRoutes';
 import { routerValuesObject } from './helpers/valuesHelper';
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/tweets', tweetRoutes);
 app.use('/likes', likeRoutes);
 app.use('/comments', commentRoutes);
 app.use('/roles', rolesRoutes);
+app.use('/pictures', pictureRoutes);
 
 app.listen(port, () => {
     console.log(routerValuesObject.defaultMessage);
