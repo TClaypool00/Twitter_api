@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 27, 2024 at 03:45 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Generation Time: Mar 10, 2024 at 12:45 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -147,15 +147,47 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_role` (IN `r_name` VARCHAR(2
     SELECT r.role_id, r.create_date FROM roles r WHERE r.role_id = LAST_INSERT_ID();
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet` (IN `tweet_text` VARCHAR(255), IN `user_id` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet` (IN `tweet_text` VARCHAR(255), IN `user_id` INT, IN `path_array` TEXT, IN `c_text_array` TEXT)   BEGIN
 	DECLARE tweet_id INT;
+            DECLARE path_element VARCHAR(500);
+            DECLARE caption_text_element VARCHAR(255);
+            DECLARE counter INT DEFAULT 0;
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    	ROLLBACK;
+    END;
+    
+    START TRANSACTION;
 
 	INSERT INTO tweets (tweet_text, user_id)
 	VALUES(tweet_text, user_id);
     
     SET tweet_id = LAST_INSERT_ID();
     
+    IF LENGTH(path_array) > 0 THEN
+    	myloop: WHILE TRUE DO 
+            SET counter = counter + 1;
+            SET path_element = SUBSTRING_INDEX(path_array, ',', 1);
+            SET caption_text_element = SUBSTRING_INDEX(c_text_array, ',', 1);
+
+            INSERT INTO pictures (picture_path, caption_text, tweet_id)
+            VALUES (path_element, caption_text_element, tweet_id);
+
+            SET path_array = SUBSTRING(path_array, LENGTH(path_element) + 2);
+            SET c_text_array = SUBSTRING(c_text_array, LENGTH(caption_text_element) + 2);
+
+            IF counter = 5 OR LENGTH(path_array) = 0 THEN
+                LEAVE myLoop;
+            END IF;
+    	END WHILE;
+    END IF;
+    
     SELECT t.tweet_id, t.create_date FROM tweets t WHERE t.tweet_id = tweet_id;
+    
+    SELECT p.picture_id, p.create_date FROM pictures p WHERE p.tweet_id = tweet_id;
+    
+    COMMIT;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_tweet_like` (IN `user_Id` INT, IN `tweet_id` INT)   BEGIN
@@ -323,6 +355,27 @@ CREATE TABLE IF NOT EXISTS `likes` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `pictures`
+--
+
+CREATE TABLE IF NOT EXISTS `pictures` (
+  `picture_id` int(11) NOT NULL AUTO_INCREMENT,
+  `picture_path` varchar(500) NOT NULL,
+  `caption_text` varchar(255) NOT NULL,
+  `profile_picture` tinyint(1) NOT NULL DEFAULT 0,
+  `cover_picture` tinyint(1) NOT NULL DEFAULT 0,
+  `tweet_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `create_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `update_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`picture_id`),
+  KEY `user_id` (`user_id`),
+  KEY `tweet_id` (`tweet_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5704618 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `profiles`
 --
 
@@ -334,7 +387,7 @@ CREATE TABLE IF NOT EXISTS `profiles` (
   `gender_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`profile_id`),
   KEY `gender_id` (`gender_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -388,7 +441,7 @@ CREATE TABLE IF NOT EXISTS `tweets` (
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`tweet_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -408,7 +461,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `profile_id` int(11) NOT NULL,
   PRIMARY KEY (`user_id`),
   KEY `profile_id` (`profile_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -488,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `vw_user_roles` (
 --
 DROP TABLE IF EXISTS `vw_comments`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_comments`  AS SELECT `c`.`comment_id` AS `comment_id`, `c`.`comment_text` AS `comment_text`, `c`.`create_date` AS `create_date`, `c`.`update_date` AS `update_date`, `c`.`user_id` AS `user_id`, `c`.`tweet_id` AS `tweet_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count` FROM ((`comments` `c` left join `likes` `l` on(`c`.`comment_id` = `l`.`comment_id`)) join `users` `u` on(`u`.`user_id` = `c`.`user_id`)) GROUP BY 11  ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_comments`  AS SELECT `c`.`comment_id` AS `comment_id`, `c`.`comment_text` AS `comment_text`, `c`.`create_date` AS `create_date`, `c`.`update_date` AS `update_date`, `c`.`user_id` AS `user_id`, `c`.`tweet_id` AS `tweet_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count` FROM ((`comments` `c` left join `likes` `l` on(`c`.`comment_id` = `l`.`comment_id`)) join `users` `u` on(`u`.`user_id` = `c`.`user_id`)) GROUP BY 1 ;
 
 -- --------------------------------------------------------
 
@@ -497,7 +550,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vw_tweets`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `t`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count`, count(`c`.`comment_id`) AS `comment_count` FROM (((`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`)) left join `likes` `l` on(`t`.`tweet_id` = `l`.`tweet_id`)) left join `comments` `c` on(`t`.`tweet_id` = `c`.`tweet_id`)) GROUP BY 11  ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweets`  AS SELECT `t`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `create_date`, `t`.`update_date` AS `update_date`, `t`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, count(`l`.`like_id`) AS `like_count`, count(`c`.`comment_id`) AS `comment_count` FROM (((`tweets` `t` join `users` `u` on(`t`.`user_id` = `u`.`user_id`)) left join `likes` `l` on(`t`.`tweet_id` = `l`.`tweet_id`)) left join `comments` `c` on(`t`.`tweet_id` = `c`.`tweet_id`)) GROUP BY 1 ;
 
 -- --------------------------------------------------------
 
@@ -506,7 +559,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vw_user_roles`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_user_roles`  AS SELECT `ur`.`user_role_id` AS `user_role_id`, `ur`.`role_id` AS `role_id`, `r`.`role_name` AS `role_name`, `r`.`description` AS `description`, `u`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, `ur`.`create_date` AS `create_date`, `ur`.`update_date` AS `update_date` FROM ((`user_roles` `ur` join `users` `u` on(`ur`.`user_id` = `u`.`user_id`)) join `roles` `r` on(`ur`.`role_id` = `r`.`role_id`))  ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_user_roles`  AS SELECT `ur`.`user_role_id` AS `user_role_id`, `ur`.`role_id` AS `role_id`, `r`.`role_name` AS `role_name`, `r`.`description` AS `description`, `u`.`user_id` AS `user_id`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, `ur`.`create_date` AS `create_date`, `ur`.`update_date` AS `update_date` FROM ((`user_roles` `ur` join `users` `u` on(`ur`.`user_id` = `u`.`user_id`)) join `roles` `r` on(`ur`.`role_id` = `r`.`role_id`)) ;
 
 --
 -- Constraints for dumped tables
@@ -526,6 +579,13 @@ ALTER TABLE `likes`
   ADD CONSTRAINT `likes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`tweet_id`) REFERENCES `tweets` (`tweet_id`),
   ADD CONSTRAINT `likes_ibfk_3` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`);
+
+--
+-- Constraints for table `pictures`
+--
+ALTER TABLE `pictures`
+  ADD CONSTRAINT `pictures_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `pictures_ibfk_2` FOREIGN KEY (`tweet_id`) REFERENCES `tweets` (`tweet_id`);
 
 --
 -- Constraints for table `profiles`
