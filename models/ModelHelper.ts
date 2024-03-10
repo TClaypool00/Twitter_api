@@ -1,6 +1,6 @@
 import { isValidDate } from "../helpers/globalFunctions";
 import { requiredNumberIsNull } from "../helpers/modelHelper";
-import { globalValuesObject, requiredValue } from "../helpers/valuesHelper";
+import { booleanValuesObject, globalValuesObject, notANumberValue, picturesValuesObject, requiredValue } from "../helpers/valuesHelper";
 import { userValuesObject, tweetValuesObject, commentValuesObject } from "../helpers/valuesHelper";
 import { errorsObject } from "../helpers/valuesHelper";
 
@@ -11,6 +11,7 @@ export default abstract class ModelHelper {
     public commentId: number | undefined | null;
     public userId: number | undefined | null;
     public tweetId: number | undefined | null;
+    public pictureId: number | undefined | null;
     public errors: [string] = [''];
     public likeCount: number;
     public liked: boolean;
@@ -38,6 +39,7 @@ export default abstract class ModelHelper {
     protected endDateField: string;
     protected isEditedField: string;
     protected commentIdField: string;
+    protected pictureIdField: string;
 
     //#endregion
 
@@ -50,6 +52,7 @@ export default abstract class ModelHelper {
         this.endDateField = tweetValuesObject.endDateField;
         this.isEditedField = tweetValuesObject.isEditedField;
         this.commentIdField = commentValuesObject.commentIdField;
+        this.pictureIdField = picturesValuesObject.pictureIdField;
 
         this.index = null;
         this.likeCount = 0;
@@ -92,6 +95,14 @@ export default abstract class ModelHelper {
         }
     }
 
+    public validateUserId(): void {
+        if (isNaN(Number(this.userId))) {
+            this.errors.push(notANumberValue(this.userIdField));
+        } else {
+            this.userId = Number(this.userId);
+        }
+    }
+
     public setUserNames(userId: number, firstName: string, lastName: string) : void {
         this.userId = userId;
         this.userFirstName = firstName;
@@ -108,6 +119,10 @@ export default abstract class ModelHelper {
     public tweetIdIsNull() {
         if (requiredNumberIsNull(this.tweetId)) {
             this.errors.push(requiredValue(this.tweetIdField));
+        } else if (isNaN(Number(this.tweetId))) {
+            this.errors.push(notANumberValue(this.tweetIdField));
+        } else {
+            this.tweetId = Number(this.tweetId);
         }
     }
 
@@ -170,6 +185,36 @@ export default abstract class ModelHelper {
         } else {
             this.index = 0;
         }
+    }
+
+    protected validateBoolean(value: any, canBeNull: boolean = false): boolean | null {
+        if (typeof value === 'boolean') {
+            return value;
+        } else if (typeof value === 'string') {
+            let stringValue: string = String(value).toLowerCase();
+            if (stringValue === 'true' || stringValue === 'false') {
+                return stringValue === 'true';
+            } else {
+                this.errors.push(booleanValuesObject.stringError);
+            }
+        } else if (typeof value === 'number') {
+            let numberValue: number = Number(value);
+            if (numberValue === 0 || numberValue === 1) {
+                return numberValue === 1;
+            } else {
+                this.errors.push(booleanValuesObject.numberError);
+            }
+        } else if (value === null) {
+            if (!canBeNull) {
+                this.errors.push(errorsObject.cannotBeNullMessage);
+            }
+
+            return value;
+        } else {
+            this.errors.push(`${typeof value}${booleanValuesObject.notAcceptedMessage}`);
+        }
+
+        return null;
     }
     //#endregion
 }
