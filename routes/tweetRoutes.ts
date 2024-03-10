@@ -54,6 +54,7 @@ router.post('/', authenticateToken, upload.array('files'), async (req, resp) => 
     }
 });
 
+//Business Logic: PUT route does not update pictures just the tweet itself
 router.put('/:id', authenticateToken, async (req, resp) => {
     try {
         let tweet = new Tweet();
