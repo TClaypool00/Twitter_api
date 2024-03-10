@@ -2,6 +2,10 @@ import Comment from "../models/Comment";
 import Role from "../models/Role";
 import Tweet from "../models/Tweet";
 import User from "../models/User";
+import tweetModel from "../models/interfaces/tweetModel";
+import pictureModel from "../models/interfaces/pictureModel";
+import Picture from "../models/Picture";
+import { getTweetPictureURL } from "./fileHelper";
 
 export function requiredIsNull(value : string | undefined | null) : boolean {
     return value === null || value === undefined || value === '';
@@ -27,19 +31,30 @@ export function userObject(user: User, token: string = '', refreshToken: string 
     }
 }
 
-export function tweetObject(tweet: Tweet, status: string = '') {
-    return {
-        tweetId: Number(tweet.tweetId),
-        tweetText: tweet.tweetText,
-        datePublished: tweet.datePublishedString,
-        isEdited: tweet.isEdited,
-        userId: tweet.userId,
-        userDisplay: tweet.userDisplayName,
+export function tweetObject(tweet: Tweet, status: string = ''): tweetModel {
+    let model: tweetModel = {
+        tweetId: tweet.tweetId as number,
+        tweetText: tweet.tweetText as string,
+        dateCreated: tweet.createDateString,
+        isEdted: tweet.isEdited as boolean,
+        userId: tweet.userId as number,
+        userDisplayName: tweet.userDisplayName,
         likeCount: tweet.likeCount,
         liked: tweet.liked,
         commentCount: tweet.commentCount,
-        status: status
+        status: status,
+        files: null
     }
+
+    if (tweet.pictures !== null && tweet.pictures.length > 0) {
+        model.files = new Array<pictureModel>();
+
+        tweet.pictures.forEach(item => {
+            model.files!.push(pictureObject(item, model.tweetId, model.userId));
+        })
+    }
+
+    return model;
 }
 
 export function commentObject(comment: Comment, status: string = '') {
@@ -71,6 +86,21 @@ export function roleObject(role: Role, status: string = '') {
         roleDescription: role.description,
         createdDate: role.createDateString,
         isEdited: role.isEdited,
+        status: status
+    }
+}
+
+export function pictureObject(picture: Picture, tweetId: number | null = null, userId: number, status: string = ''): pictureModel {
+    return {
+        pictureId: picture.pictureId as number,
+        pictureUrl: getTweetPictureURL(userId, String(picture.picturePath), tweetId),
+        captionText: picture.captionText as string,
+        isCoverPicture : picture.coverPicture as boolean,
+        isProfilePicture: picture.profilePicture as boolean,
+        likeCount: picture.likeCount,
+        liked: picture.liked,
+        tweetId: tweetId,
+        userId: userId,
         status: status
     }
 }
