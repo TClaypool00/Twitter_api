@@ -74,6 +74,8 @@ export default class Tweet extends ModelHelper {
 
         if (requiredNumberIsNull(this.tweetId)) {
             this.errors.push(errorsObject.idGreaterThanZeroMessage);
+        } else {
+            this.tweetId = Number(this.tweetId);
         }
 
         //TODO: Is number

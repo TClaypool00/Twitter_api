@@ -7,6 +7,7 @@ import { deleteTweet, getTweetById, getTweets, insertTweet, tweetExists, updateT
 import { tweetObject } from '../helpers/modelHelper';
 import multer from 'multer';
 import { deleteTweetFolder, fileNames, storageObject, updateTweetFolder } from '../helpers/fileHelper';
+import { isAdmin } from '../helpers/rolesHelper';
 
 const upload = multer({
     storage: storageObject
@@ -173,16 +174,31 @@ router.delete('/:id', authenticateToken, async (req, resp) => {
     try {
         let tweet = new Tweet();
 
+        if (isAdmin()) {
+            tweet.userId = null;
+        } else {
+            tweet.userId = currentUser.userId;
+        }
+
         tweet.validateTweetId(req);
+        tweet.validateUserId(!isAdmin());
 
         if (tweet.errors.length > 0) {
             resp.status(400)
             .json(tweet.errors);
-        } 
+        }
 
-        if (!await tweetExists(Number(tweet.tweetId), currentUser.userId)) {
+        if (!await tweetExists(Number(tweet.tweetId), tweet.userId)) {
             resp.status(400)
             .json(getStatus(tweetValuesObject.tweetNotFoundMessage));
+
+            return;
+        }
+
+        try {
+            deleteTweetFolder(Number(tweet.userId), tweet.tweetId)
+        } catch(error: any) {
+            throw error;
         }
 
         if (await deleteTweet(Number(tweet.tweetId)) > 0) {

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 10, 2024 at 12:45 PM
+-- Generation Time: Mar 10, 2024 at 09:24 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -71,10 +71,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_tweet` (IN `id` INT)   BEGIN
     END;
 
 	START TRANSACTION;
+   	DELETE FROM pictures
+    WHERE tweet_id = id;
+    
     DELETE FROM likes
     WHERE comment_id IN (SELECT comment_id FROM comments 
                         WHERE tweet_id = id);
-    
     DELETE FROM comments
     WHERE tweet_id = id;
     

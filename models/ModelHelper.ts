@@ -95,11 +95,13 @@ export default abstract class ModelHelper {
         }
     }
 
-    public validateUserId(): void {
-        if (isNaN(Number(this.userId))) {
-            this.errors.push(notANumberValue(this.userIdField));
-        } else {
-            this.userId = Number(this.userId);
+    public validateUserId(isRequired: boolean = true): void {
+        if (isRequired) {
+            if (isNaN(Number(this.userId))) {
+                this.errors.push(notANumberValue(this.userIdField));
+            } else {
+                this.userId = Number(this.userId);
+            }
         }
     }
 
