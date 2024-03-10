@@ -6,7 +6,7 @@ import { generateGetAllSql, getAllSql, getallParams } from "../helpers/serviceHe
 const connection = connect();
 
 export async function insertTweet(tweet: Tweet) : Promise<Tweet> {
-    let [newTweet] = await connection.query('call insert_tweet(?, ?)', [tweet.tweetText, tweet.userId]);
+    let [newTweet] = await connection.query('call insert_tweet(?, ?, ?, ?)', [tweet.tweetText, tweet.userId, tweet.picturePathStrings, tweet.captionTextStrings]);
 
     let jsonObject = getJSONObject(newTweet);
     jsonObject = jsonObject[0][0];

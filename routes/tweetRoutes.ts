@@ -2,38 +2,51 @@ import express from 'express';
 import { authenticateToken, currentUser, validateUserId } from '../helpers/jwtHelper';
 import Tweet from '../models/Tweet';
 import { getStatus } from '../helpers/globalFunctions';
-import { jwtValuesObject, maxLenghValue, maxLengthsObject, tweetValuesObject } from '../helpers/valuesHelper';
+import { errorsObject, jwtValuesObject, maxLengthsObject, tweetValuesObject, userValuesObject } from '../helpers/valuesHelper';
 import { deleteTweet, getTweetById, getTweets, insertTweet, tweetExists, updateTweet } from '../data_access/tweetService';
 import { tweetObject } from '../helpers/modelHelper';
+import multer from 'multer';
+import { deleteTweetFolder, fileNames, storageObject, updateTweetFolder } from '../helpers/fileHelper';
+
+const upload = multer({
+    storage: storageObject
+});
 const router = express.Router();
 
-router.post('/', authenticateToken, async (req, resp) => {
+router.post('/', authenticateToken, upload.array('files'), async (req, resp) => {
     try {
         let tweet = new Tweet();
         tweet.create(req.body); 
-        
-        if (tweet.errors.length > 0) {
-            resp.status(400)
-            .json(getStatus(tweet.errors));
+        if (typeof tweet.userId === 'number') {
+            if (tweet.errors.length > 0) {
+                deleteTweetFolder(tweet.userId);
+    
+                resp.status(400)
+                .json(getStatus(tweet.errors));
+    
+                return;
+            }
+    
+            tweet = await insertTweet(tweet);
+            tweet.setUserName(currentUser.userId, currentUser.firstName, currentUser.lastName);
 
-            return;
-        }
+            updateTweetFolder(Number(tweet.userId), Number(tweet.tweetId));
+    
+            if (typeof tweet.tweetId === 'number' && tweet.tweetId > 0) {
+                resp.status(200)
+                .json(tweetObject(tweet, tweetValuesObject.createdOKMessage));
+            } else {
+                deleteTweetFolder(Number(tweet.userId), tweet.tweetId)
 
-        if (!validateUserId(Number(tweet.userId))) {
-            resp.status(403)
-            .json(getStatus(jwtValuesObject.unauthorizedMessage));
+                throw tweetValuesObject.created500ErrorMessage;
+            }
 
-            return;
-        }
-
-        tweet = await insertTweet(tweet);
-        tweet.setUserName(currentUser.userId, currentUser.firstName, currentUser.lastName);
-
-        if (typeof tweet.tweetId === 'number' && tweet.tweetId > 0) {
             resp.status(200)
-            .json(tweetObject(tweet, tweetValuesObject.createdOKMessage));
+            .send();
         } else {
-            throw tweetValuesObject.created500ErrorMessage;
+            deleteTweetFolder(Number(tweet.userId), tweet.tweetId)
+            resp.status(400)
+            .json(getStatus(`${userValuesObject.userIdField} ${errorsObject.notNumberMessage}`))
         }
     } catch (error: any) {
         resp.status(500)

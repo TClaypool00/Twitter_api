@@ -1,6 +1,8 @@
+import { fileNames } from "../helpers/fileHelper";
 import { requiredIsNull, requiredNumberIsNull, valueExceedsLength } from "../helpers/modelHelper";
 import { errorsObject, maxLenghValue, maxLengthsObject, requiredValue, tweetValuesObject } from "../helpers/valuesHelper";
 import ModelHelper from "./ModelHelper";
+import Picture from "./Picture";
 
 export default class Tweet extends ModelHelper {
     //#region  Private Fields
@@ -10,6 +12,9 @@ export default class Tweet extends ModelHelper {
     //#region Public Properites
     public tweetText: string | undefined | null;
     public commentCount: number;
+    public pictures: Array<Picture> | null;
+    public picturePathStrings: string;
+    public captionTextStrings: string;
     //#endregion
 
     //#region  Constructors
@@ -22,6 +27,9 @@ export default class Tweet extends ModelHelper {
 
         this.tweetText = null;
         this.commentCount = 0;
+        this.pictures = null;
+        this.picturePathStrings = '';
+        this.captionTextStrings = '';
     }
     //#endregion
 
@@ -32,6 +40,27 @@ export default class Tweet extends ModelHelper {
         this.isEdited = false;
 
         this.validateCreateData();
+        this.validateUserId();
+
+        if (fileNames !== null) {
+            this.pictures = new Array<Picture>();
+
+            for (let i = 0; i < fileNames.length; i++) {
+                const name = fileNames[i];
+                let picture = new Picture();
+                picture.newFile(name, reqBody.captionTexts[i]);
+
+                this.captionTextStrings += picture.captionText;
+                this.picturePathStrings += picture.picturePath;
+
+                if (i !== fileNames.length - 1) {
+                    this.captionTextStrings += ', ';
+                    this.picturePathStrings += ', ';
+                }
+                
+                this.pictures.push(picture);
+            }
+        }
     }
 
     public update(req: any): void {
@@ -83,28 +112,40 @@ export default class Tweet extends ModelHelper {
     }
 
     public setData(data: any) {
-        this.tweetId = data.tweet_id;
-        this.tweetText = data.tweet_text;
-        this.createDate = new Date(String(data.create_date));
+        let tweetData: any = data[0][0];
+
+        this.tweetId = tweetData.tweet_id;
+        this.tweetText = tweetData.tweet_text;
+        this.createDate = new Date(String(tweetData.create_date));
         this.createDateString = this.createDate.toLocaleDateString();
-        this.updateDate = data.update_date;
+        this.updateDate = tweetData.update_date;
         this.isEdited = this.updateDate !== null;
-        this.userId = data.user_id;
-        this.userFirstName = data.first_name;
-        this.userLastName = data.last_name;
+        this.userId = tweetData.user_id;
+        this.userFirstName = tweetData.first_name;
+        this.userLastName = tweetData.last_name;
         this.setDisplayName();
-        this.likeCount = data.like_count;
-        this.liked = Boolean(data.liked);
+        this.likeCount = tweetData.like_count;
+        this.liked = Boolean(tweetData.liked);
 
         if (this.updateDate === null) {
             this.datePublishedString = this.createDateString;
         } else {
-            this.updateDate = new Date(String(data.update_date));
+            this.updateDate = new Date(String(tweetData.update_date));
             this.updateDateString = this.updateDate.toLocaleDateString();
             this.datePublishedString = this.updateDateString;
         }
 
-        this.commentCount = data.comment_count;
+        this.commentCount = tweetData.comment_count;
+
+        let pictrueData: any = data[1];
+        if (pictrueData) {
+            for (let i = 0; i < pictrueData.length; i++) {
+                const pictureEleemnt = pictrueData[i];
+                this.pictures![i].pictureId = pictureEleemnt.picture_id;
+                this.pictures![i].createDate = pictureEleemnt.create_date;
+                this.pictures![i].setCreateDate();
+            }
+        }
     }
 
     public setDisplayName(): void {
