@@ -27,6 +27,8 @@ DEV_DB_HOST = 'your host'
 DEV_DB_USER_NAME = 'your username'
 DEV_DB_PASSWORD = 'your password'
 DEV_DATABASE = 'twitter'
+DEV_FILE_PATH = 'your file path'
+DEV_FILE_SERVER = 'your file server URL'
 
 SECRET_KEY = 'Your secret key'
 REFRESH_KEY = 'Your secret key for refresh token'
