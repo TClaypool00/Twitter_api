@@ -41,6 +41,20 @@ export default class Picture extends ModelHelper {
         this.captionText = captionText;
         this.validateCaptionText();
     }
+
+    public setData(data: any): void {
+        this.pictureId = data.picture_id;
+        this.setCreateDate(data.create_date)
+        this.captionText = data.caption_text;
+        this.picturePath = data.picture_path;
+        this.profilePicture = Boolean(data.profile_picture);
+        this.coverPicture = Boolean(data.cover_picture);
+        this.updateDate = data.update_date;
+        this.likeCount = data.like_count;
+        this.liked = Boolean(data.liked);
+        this.isEdited = this.updateDate === null;
+        this.setCreateDateString();
+    }
     //#endregion
 
     //#region Private Methods
