@@ -16,7 +16,8 @@ const errorsObject = {
 const maxLengthsObject = {
     defaultStringMaxLength: Number(values.maxLengths.stringMaxLength),
     phoneNumberMaxLength: Number(values.maxLengths.phoenNum),
-    standardTakeValue: Number(values.maxLengths.standardTakeValue)
+    standardTakeValue: Number(values.maxLengths.standardTakeValue),
+    subTakeValue: Number(values.maxLengths.subTakeValue)
 }
 
 const userValuesObject = {
@@ -62,7 +63,8 @@ const tweetValuesObject = {
     deleted500ErrorMessage: values.tweet.errors.deletedError,
     tweetNotFoundMessage: values.tweet.errors.tweetNotFound,
     noTweetsMessage: values.tweet.errors.noTweets,
-    likedSql: values.tweet.sql.liked
+    likedSql: values.tweet.sql.liked,
+    includePicturesField: values.tweet.includePictures
 }
 
 const likeValuesObject = {
@@ -94,7 +96,8 @@ const routerValuesObject = {
 }
 
 const globalValuesObject = {
-    indexField: values.global.index
+    indexField: values.global.index,
+    includeCommentsField: values.global.includeComments
 }
 
 const rolesValuesObject = {

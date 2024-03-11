@@ -13,7 +13,8 @@
     "maxLengths" : {
         "stringMaxLength" : 255,
         "phoenNum" : 10,
-        "standardTakeValue": 10
+        "standardTakeValue": 10,
+        "subTakeValue": 5
     },
     "user" : {
         "userId": "User id",
@@ -41,6 +42,7 @@
         "startDate": "Start date",
         "endDate": "End date",
         "isEdited": "Is edited",
+        "includePictures": "Include pictures",
         "okMessages" : {
             "created": "Tweet has been posted!",
             "updated": "Tweet has been updated!",
@@ -105,7 +107,8 @@
         "defaultMessage" : "Listening..."
     },
     "global" : {
-        "index" : "Index"
+        "index" : "Index",
+        "includeComments": "Include comments"
     },
     "roles" : {
         "roleId": "Role id",
@@ -149,7 +152,7 @@
         "errors":{
             "stringValues": "Value can only be true or false",
             "numberValue": "Value can only 1 or 0",
-            "notAccepted": " is not an accted value"
+            "notAccepted": " is not an accepted value"
         }
     },
     "file": {
