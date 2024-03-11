@@ -95,7 +95,8 @@ router.put('/:id', authenticateToken, async (req, resp) => {
 });
 
 router.get('/:id', authenticateToken, async (req, resp) => {
-    let tweet = new Tweet();
+    try {
+        let tweet = new Tweet();
         tweet.validateTweetId(req);
         if (isAdmin()) {
             tweet.userId = null;
@@ -121,6 +122,10 @@ router.get('/:id', authenticateToken, async (req, resp) => {
 
         resp.status(200)
         .json(tweetObject(tweet));
+    } catch (error: any) {
+        resp.status(500)
+        .json(getStatus(error))
+    }
 });
 
 //TODO: sort by by like count
