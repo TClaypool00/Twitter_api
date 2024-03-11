@@ -1,4 +1,5 @@
 import pictureModel from "./pictureModel";
+import commentModel from './commentModel';
 
 export default interface tweetModel {
     tweetId: number;
@@ -11,5 +12,6 @@ export default interface tweetModel {
     liked: boolean;
     commentCount: number;
     files: Array<pictureModel> | null;
+    comments: Array<commentModel> | null;
     status: string;
 }

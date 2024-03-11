@@ -95,17 +95,22 @@ router.put('/:id', authenticateToken, async (req, resp) => {
 });
 
 router.get('/:id', authenticateToken, async (req, resp) => {
-    try {
-        let tweet = new Tweet();
+    let tweet = new Tweet();
         tweet.validateTweetId(req);
-        tweet.userId = currentUser.userId;
+        if (isAdmin()) {
+            tweet.userId = null;
+        } else {
+            tweet.userId = currentUser.userId;
+        }
 
         if (tweet.errors.length > 0) {
             resp.status(400)
             .json(getStatus(tweet.errors));
+
+            return;
         }
 
-        if (!await tweetExists(Number(tweet.tweetId))) {
+        if (!await tweetExists(Number(tweet.tweetId), tweet.userId)) {
             resp.status(404)
             .json(getStatus(tweetValuesObject.tweetNotFoundMessage));
 
@@ -116,11 +121,6 @@ router.get('/:id', authenticateToken, async (req, resp) => {
 
         resp.status(200)
         .json(tweetObject(tweet));
-
-    } catch (error: any) {
-        resp.status(500)
-        .json(getStatus(error));
-    }
 });
 
 //TODO: sort by by like count

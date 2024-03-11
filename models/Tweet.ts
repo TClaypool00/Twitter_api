@@ -1,12 +1,14 @@
 import { fileNames } from "../helpers/fileHelper";
 import { requiredIsNull, requiredNumberIsNull, valueExceedsLength } from "../helpers/modelHelper";
 import { errorsObject, maxLenghValue, maxLengthsObject, requiredValue, tweetValuesObject } from "../helpers/valuesHelper";
+import Comment from "./Comment";
 import ModelHelper from "./ModelHelper";
 import Picture from "./Picture";
 
 export default class Tweet extends ModelHelper {
     //#region  Private Fields
     private readonly tweetTextField: string;
+    private readonly includePicturesField: string;
     //#endregion
 
     //#region Public Properites
@@ -15,6 +17,8 @@ export default class Tweet extends ModelHelper {
     public pictures: Array<Picture> | null;
     public picturePathStrings: string;
     public captionTextStrings: string;
+    public includePictures: boolean | undefined | null;
+    public comments: Array<Comment> | null;
     //#endregion
 
     //#region  Constructors
@@ -24,8 +28,10 @@ export default class Tweet extends ModelHelper {
         super();
 
         this.tweetTextField = tweetValuesObject.tweetTextField;
+        this.includePicturesField = tweetValuesObject.includePicturesField;
 
         this.tweetText = null;
+        this.comments = null;
         this.commentCount = 0;
         this.pictures = null;
         this.picturePathStrings = '';
@@ -71,6 +77,11 @@ export default class Tweet extends ModelHelper {
 
     public validateTweetId(req: any) : void {
         this.tweetId = req.params.id;
+        this.includeComments = req.query.includeComments;
+        this.includePictures = req.query.includePictures;
+
+        this.includePictures = this.validateBoolean(this.includePictures, true);
+        this.includeComments = this.validateBoolean(this.includeComments, true);
 
         if (requiredNumberIsNull(this.tweetId)) {
             this.errors.push(errorsObject.idGreaterThanZeroMessage);
@@ -115,6 +126,8 @@ export default class Tweet extends ModelHelper {
 
     public setData(data: any) {
         let tweetData: any = data[0][0];
+        let pictrueData: any = data[1];
+        let commentData: any = data[2];
 
         this.tweetId = tweetData.tweet_id;
         this.tweetText = tweetData.tweet_text;
@@ -139,13 +152,35 @@ export default class Tweet extends ModelHelper {
 
         this.commentCount = tweetData.comment_count;
 
-        let pictrueData: any = data[1];
         if (pictrueData) {
+            if (this.pictures === null) {
+                this.pictures = new Array<Picture>();
+            }
+
             for (let i = 0; i < pictrueData.length; i++) {
-                const pictureEleemnt = pictrueData[i];
-                this.pictures![i].pictureId = pictureEleemnt.picture_id;
-                this.pictures![i].createDate = pictureEleemnt.create_date;
-                this.pictures![i].setCreateDate();
+                const pictureElement = pictrueData[i];
+                if (typeof this.pictures[i] !== 'undefined') {
+                    this.pictures![i].pictureId = pictureElement.picture_id;
+                    this.pictures![i].createDate = pictureElement.create_date;
+                    // this.pictures![i].setCreateDate();
+                } else {
+                    let newPicture: Picture = new Picture();
+                    newPicture.setData(pictureElement);
+                    this.pictures.push(newPicture);
+                }
+            }
+        }
+
+        if (commentData) {
+            if (this.comments === null) {
+                this.comments = new Array<Comment>();
+            }
+
+            for (let i = 0; i < commentData.length; i++) {
+                const commentElement = commentData[i];
+                let newComment = new Comment();
+                newComment.setData(commentElement);
+                this.comments.push(newComment);
             }
         }
     }

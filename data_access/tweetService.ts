@@ -1,7 +1,7 @@
 import connect from "../database/database";
 import Tweet from '../models/Tweet';
 import { getJSONObject } from '../helpers/jsonHelper';
-import { tweetValuesObject } from "../helpers/valuesHelper";
+import { maxLengthsObject, tweetValuesObject } from "../helpers/valuesHelper";
 import { generateGetAllSql, getAllSql, getallParams } from "../helpers/serviceHelper";
 const connection = connect();
 
@@ -38,9 +38,8 @@ export async function tweetExists(tweetId: number, userId: number | null = null)
 }
 
 export async function getTweetById(tweet: Tweet) : Promise<Tweet> {
-    let [dataTweet] = await connection.query('call get_tweet_by_id(?, ?)', [tweet.tweetId, tweet.userId]);
+    let [dataTweet] = await connection.query('call get_tweet_by_id(?, ?, ?, ?, ?)', [tweet.tweetId, tweet.userId, tweet.includePictures, tweet.includeComments, maxLengthsObject.subTakeValue]);
     let jsonObject = getJSONObject(dataTweet);
-    jsonObject = jsonObject[0][0];
 
     tweet.setData(jsonObject);
 
@@ -50,7 +49,7 @@ export async function getTweetById(tweet: Tweet) : Promise<Tweet> {
 export async function getTweets(tweet:Tweet, limitValue: number) : Promise<Array<Tweet>> {
     //TODO: Add Start and End date logoic to query
     
-    let tweets = new Array<Tweet>;
+    let tweets = new Array<Tweet>();
     generateGetAllSql(tweet, 'vw_tweets', tweetValuesObject.likedSql, limitValue, 'tweet_text');
     
     let [dataTweets] = await connection.query(getAllSql, getallParams);
