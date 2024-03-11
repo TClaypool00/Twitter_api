@@ -65,14 +65,14 @@ export default class Role extends ModelHelper {
     public setCreateData(data: any): void {
         this.roleId = Number(data.role_id);
         this.createDate = new Date(String(data.create_date));
-        this.setCreateDate();
+        this.setCreateDateString();
         this.isEdited = false;
     }
 
     public setUpdateData(data: any): void {
         this.updateDate = new Date(String(data.update_date));
         this.createDate = new Date(String(data.create_date));
-        this.setCreateDate();
+        this.setCreateDateString();
         this.isEdited = true;
     }
     //#endregion

@@ -29,6 +29,7 @@ export default abstract class ModelHelper {
     public userFirstName: string;
     public userLastName: string;
     public userDisplayName: string;
+    public includeComments: boolean | undefined | null;
    //#endregion
 
     //#region Protected Fields
@@ -40,7 +41,7 @@ export default abstract class ModelHelper {
     protected isEditedField: string;
     protected commentIdField: string;
     protected pictureIdField: string;
-
+    protected includeCommentsField: string;
     //#endregion
 
     //#region Constructors
@@ -53,6 +54,7 @@ export default abstract class ModelHelper {
         this.isEditedField = tweetValuesObject.isEditedField;
         this.commentIdField = commentValuesObject.commentIdField;
         this.pictureIdField = picturesValuesObject.pictureIdField;
+        this.includeCommentsField = globalValuesObject.includeCommentsField;
 
         this.index = null;
         this.likeCount = 0;
@@ -71,6 +73,7 @@ export default abstract class ModelHelper {
         this.datePublishedString = '';
         this.endDate = null;
         this.startDate = null;
+        this.includeComments = null;
 
         this.errors = [''];
         this.errors.splice(0, 1);
@@ -78,8 +81,14 @@ export default abstract class ModelHelper {
     //#endregion
 
     //#region Public Methods
-    public setCreateDate() : void {
-        this.createDateString = this.createDate!.toLocaleDateString();
+    public setCreateDateString() : void {
+        if (this.createDate !== null) {
+            this.createDateString = this.createDate.toLocaleDateString();
+        }
+    }
+
+    public setCreateDate(date: any): void {
+        this.createDate = new Date(String(date));
     }
 
     //#region User Methods
@@ -206,12 +215,12 @@ export default abstract class ModelHelper {
             } else {
                 this.errors.push(booleanValuesObject.numberError);
             }
-        } else if (value === null) {
+        } else if (value === null || typeof value === 'undefined') {
             if (!canBeNull) {
                 this.errors.push(errorsObject.cannotBeNullMessage);
             }
 
-            return value;
+            return null;
         } else {
             this.errors.push(`${typeof value}${booleanValuesObject.notAcceptedMessage}`);
         }

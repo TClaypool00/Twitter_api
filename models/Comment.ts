@@ -67,7 +67,7 @@ export default class Comment extends ModelHelper {
     public setCreateData(data: any) : void {
         this.commentId = data.comment_id;
         this.createDate = new Date(data.create_date);
-        this.setCreateDate();
+        this.setCreateDateString();
     }
 
     public setUpdateData(data: any): void {
@@ -91,7 +91,7 @@ export default class Comment extends ModelHelper {
         this.commentId = Number(data.comment_id);
         this.commentText = data.comment_text;
         this.createDate = new Date(String(data.create_date));
-        this.setCreateDate();
+        this.setCreateDateString();
         if (data.update_date !== null) {
             this.updateDate = new Date(String(data.update_date));
         }
