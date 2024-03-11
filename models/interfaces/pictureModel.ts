@@ -5,6 +5,8 @@ export default interface pictureModel {
     isProfilePicture: boolean;
     isCoverPicture: boolean;
     tweetId: number | null;
+    createDate: string;
+    isEdited: boolean;
     userId: number;
     liked: boolean;
     likeCount: number;
