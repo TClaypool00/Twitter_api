@@ -6,6 +6,7 @@ import tweetModel from "../models/interfaces/tweetModel";
 import pictureModel from "../models/interfaces/pictureModel";
 import Picture from "../models/Picture";
 import { getTweetPictureURL } from "./fileHelper";
+import commentModel from "../models/interfaces/commentModel";
 
 export function requiredIsNull(value : string | undefined | null) : boolean {
     return value === null || value === undefined || value === '';
@@ -43,7 +44,8 @@ export function tweetObject(tweet: Tweet, status: string = ''): tweetModel {
         liked: tweet.liked,
         commentCount: tweet.commentCount,
         status: status,
-        files: null
+        files: null,
+        comments: null
     }
 
     if (tweet.pictures !== null && tweet.pictures.length > 0) {
@@ -54,18 +56,26 @@ export function tweetObject(tweet: Tweet, status: string = ''): tweetModel {
         })
     }
 
+    if (tweet.comments != null && tweet.comments.length > 0) {
+        model.comments = new Array<commentModel>();
+
+        tweet.comments.forEach(item => {
+            model.comments!.push(commentObject(item))
+        })
+    }
+
     return model;
 }
 
-export function commentObject(comment: Comment, status: string = '') {
+export function commentObject(comment: Comment, status: string = '') : commentModel {
     return {
         commentId: Number(comment.commentId),
-        commentText: comment.commentText,
+        commentText: comment.commentText as string,
         createDate: comment.createDateString,
-        isEdited: comment.isEdited,
-        tweetId: comment.tweetId,
-        userId: comment.userId,
-        userDisplayName: comment.userDisplayName,
+        isEdited: comment.isEdited as boolean,
+        tweetId: comment.tweetId as number | null,
+        userId: comment.userId as number,
+        username: comment.userDisplayName,
         likeCount: comment.likeCount,
         liked: comment.liked,
         status: status
@@ -99,6 +109,8 @@ export function pictureObject(picture: Picture, tweetId: number | null = null, u
         isProfilePicture: picture.profilePicture as boolean,
         likeCount: picture.likeCount,
         liked: picture.liked,
+        createDate: picture.createDateString,
+        isEdited: picture.isEdited as boolean,
         tweetId: tweetId,
         userId: userId,
         status: status
