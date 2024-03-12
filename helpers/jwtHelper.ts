@@ -18,7 +18,7 @@ var currentUser = {
 }
 
 export function generateToken(user: User, isRefreshToken : boolean = false) : string {
-    currentUser.userId = user.userId;
+    currentUser.userId = Number(user.userId);
     currentUser.firstName = String(user.firstName);
     currentUser.lastName = String(user.lastName);
     currentUser.email = String(user.email);
@@ -117,6 +117,7 @@ export function verifyAccessToken(token: string, isRefreshToken: boolean = false
     }
 }
 
+//TODO: formUserId should number | null | undefined
 export function validateUserId(formUserId: Number) : boolean {
     return formUserId === currentUser.userId;
 }
