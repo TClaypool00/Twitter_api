@@ -88,8 +88,6 @@ export default class Tweet extends ModelHelper {
         } else {
             this.tweetId = Number(this.tweetId);
         }
-
-        //TODO: Is number
     }
 
     public getAll(reqQuery: any) {
