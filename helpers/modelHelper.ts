@@ -9,6 +9,7 @@ import { getTweetPictureURL } from "./fileHelper";
 import commentModel from "../models/interfaces/commentModel";
 import apiUserModel from "../models/interfaces/apiUserModel";
 import mutliUserModel from "../models/interfaces/multiModels/multiUserModel";
+import userModel from "../models/interfaces/userModel";
 
 export function requiredIsNull(value : string | undefined | null) : boolean {
     return value === null || value === undefined || value === '';
@@ -42,6 +43,30 @@ export function multiUserObject(user: User): mutliUserModel {
         firstName: user.firstName as string,
         lastName: user.lastName as string,
         profilePictureURL: user.profilePictureURL
+    }
+}
+
+export function userObject(user: User) : userModel {
+    return {
+        userId: user.userId as number,
+        username: user.userName as string,
+        firstName: user.firstName as string,
+        lastName: user.lastName as string,
+        email: user.email as string,
+        phoneNumber: user.phoneNumber as string,
+        createDate: user.createDate!.toLocaleDateString() as string,
+        profileId: user.profileId,
+        aboutMe: user.aboutMe,
+        middleName: user.middleName,
+        birthDate: user.birthDate?.toLocaleDateString() as string | null,
+        genderId: user.genderId,
+        genderName: user.genderName,
+        pronoun1: user.pronoun1,
+        pronoun2: user.pronoun2,
+        coverPictureId: user.coverPictureId,
+        coverPicturePath: user.coverPicturePath,
+        profilePictureId: user.profliePictureId,
+        profilePictureURL: user.profilePicturePath
     }
 }
 

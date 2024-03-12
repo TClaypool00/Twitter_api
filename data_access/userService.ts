@@ -39,6 +39,14 @@ export async function phoneNumberExists(phoneNumber : string, userId: number | n
     return Boolean(jsonObject[0][0].phone_number_exists);
 }
 
+export async function userExistsById(user:User): Promise<Boolean> {
+    let [exists] = await connection.query('call user_exists_by_id(?);', [user.userId]);
+    let jsonObject = getJSONObject(exists);
+    jsonObject = jsonObject[0][0];
+
+    return Boolean(jsonObject.user_exists_by_id);
+}
+
 export async function getUserByEmail(user: User) : Promise<User> {
     const [dataUser] = await connection.query('call get_single_user_by_email(?)', [user.email]);
     let jsonObject = getJSONObject(dataUser);
@@ -69,4 +77,12 @@ export async function getAllUsers(user:User): Promise<Array<User>> {
     return users;
 }
 
+export async function getUserById(user:User): Promise<User> {
+    const [dataUser] = await connection.query('call get_user_by_id(?)', [user.userId]);
+    let jsonObject = getJSONObject(dataUser);
+    jsonObject = jsonObject[0][0];
 
+    user.setData(jsonObject);
+
+    return user;
+}

@@ -114,6 +114,24 @@ export default abstract class ModelHelper {
         }
     }
 
+    public validateId(value: any, name: string, isRequired: boolean = false): number | null {
+        if (value === null || typeof value === 'undefined') {
+            if (isRequired) {
+                this.errors.push(notANumberValue(name));
+            }
+
+            return null;
+        }
+        
+        if (isNaN(value)) {
+            this.errors.push(notANumberValue(name));
+        } else {
+            value = Number(value);
+        }
+
+        return value;
+    }
+
     public setUserNames(userId: number, firstName: string, lastName: string) : void {
         this.userId = userId;
         this.userFirstName = firstName;

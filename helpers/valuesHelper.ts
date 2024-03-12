@@ -35,7 +35,8 @@ const userValuesObject = {
     usernameExistsMessage: values.user.errors.usernameExists,
     emailDoesNotExistsMessage: values.user.errors.emailDoesNotExists,
     created500ErrorMessage: values.user.errors.createdError,
-    getAllNotFoundMessage: values.user.errors.getAllNotFound
+    getAllNotFoundMessage: values.user.errors.getAllNotFound,
+    notFoundMessage: values.user.errors.notFound
 }
 
 const passwordValuesObject = {

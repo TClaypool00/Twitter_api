@@ -1,12 +1,12 @@
 import express from 'express';
 import User from '../models/User';
-import { insertUser, phoneNumberExists, emailExists, usernameExists, getUserByEmail, getAllUsers } from '../data_access/userService';
+import { insertUser, phoneNumberExists, emailExists, usernameExists, getUserByEmail, getAllUsers, userExistsById, getUserById } from '../data_access/userService';
 import { getError, getErrors, getStatus } from '../helpers/globalFunctions';
 import bcrypt from 'bcrypt';
 import { passwrdMeetsRequirements } from '../data_access/passwordService';
 import { passwordValuesObject, userValuesObject, errorsObject, jwtValuesObject } from '../helpers/valuesHelper';
 import * as  emailValidator from 'email-validator';
-import { apiUserObject, multiUserObject } from '../helpers/modelHelper';
+import { apiUserObject, multiUserObject, userObject } from '../helpers/modelHelper';
 import { authenticateToken, generateToken } from '../helpers/jwtHelper';
 import { isAdmin } from '../helpers/rolesHelper';
 import userModel from '../models/interfaces/userModel';
@@ -127,15 +127,8 @@ router.post('/login', async (req, resp) => {
 });
 
 router.get('/', authenticateToken, async (req, resp) => {
-    // try {
-        
-
-    // } catch (error: any) {
-    //     resp.status(500)
-    //     .json(getStatus(error));
-    // }
-
-    let user: User = new User();
+    try {
+        let user: User = new User();
         user.getAll(req);
 
         if (user.errors.length > 0) {
@@ -169,7 +162,40 @@ router.get('/', authenticateToken, async (req, resp) => {
 
         resp.status(200)
         .json(getStatus(userModels));
+    } catch (error: any) {
+        resp.status(500)
+        .json(getStatus(error));
+    }
 });
+
+router.get('/:id', authenticateToken, async (req, resp) => {
+    try {
+        let user: User = new User();
+        user.userId = user.validateId(req.params.id, userValuesObject.userIdField, true);
+        
+        if (user.errors.length > 0) {
+            resp.status(400)
+            .json(getStatus(user.errors));
+
+            return;
+        }
+
+        if (!await userExistsById(user)) {
+            resp.status(404)
+            .json(getStatus(userValuesObject.notFoundMessage));
+
+            return;
+        }
+
+        user = await getUserById(user);
+
+        resp.status(200)
+        .json(getStatus(userObject(user)));
+    } catch (error: any) {
+        resp.status(500)
+        .json(getStatus(error));
+    }
+})
 
 //TODO: Create Delete user route
 

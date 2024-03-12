@@ -34,7 +34,8 @@
             "phoneNumberExists": "Phone number already exists",
             "usernameExists": "Username already exists",
             "cteatedError": "Could not complete registeration",
-            "getAllNotFound": "No users found"
+            "getAllNotFound": "No users found",
+            "notFound": "User does not exist"
         }
     },
     "tweet" : {
