@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 10, 2024 at 09:24 PM
+-- Generation Time: Mar 12, 2024 at 06:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -97,6 +97,19 @@ ELSE
 END IF;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_all_users` (IN `search` VARCHAR(255), IN `p_index` INT, IN `p_limit` INT)   BEGIN
+	IF search IS NULL THEN
+    	SELECT u.user_id, u.username, u.first_name, u.last_name, u.profile_picture_path
+        FROM vw_user_profiles u
+        LIMIT p_index, p_limit;
+    ELSE
+    	SELECT u.user_id, u.username, u.first_name, u.last_name, u.profile_picture_path
+        FROM vw_user_profiles u
+        WHERE u.username LIKE CONCAT('%', search, '%') OR u.first_name LIKE CONCAT('%', search, '%') OR u.last_name LIKE CONCAT('%', search, '%')
+        LIMIT p_index, p_limit;
+    END IF;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_comment_by_id` (IN `c_id` INT, IN `u_id` INT)   BEGIN
 	SELECT c.*, EXISTS(SELECT * FROM likes l WHERE l.user_id = u_id AND l.comment_id = c_id) AS liked FROM vw_comments c WHERE c.comment_id = c_id;
 END$$
@@ -125,9 +138,35 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `get_single_user_by_email` (IN `emai
 
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_tweet_by_id` (IN `tweet_id` INT, IN `user_id` INT)   BEGIN
-	SELECT t.*, EXISTS(SELECT * FROM likes l WHERE l.tweet_id = tweet_id AND l.user_id = user_id) AS liked FROM vw_tweets t WHERE t.tweet_id = tweet_id
-    LIMIT 1;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_tweet_by_id` (IN `tweet_id` INT, IN `user_id` INT, IN `include_pictures` BOOLEAN, IN `include_comments` BOOLEAN, IN `p_limit` INT)   BEGIN
+	SELECT t.*, EXISTS(SELECT l.like_id FROM likes WHERE l.user_id = user_id) AS liked FROM vw_tweets t
+    LEFT JOIN likes l
+    ON l.tweet_id = t.tweet_id
+    WHERE t.tweet_id = tweet_id
+    LIMIT 0, 1;
+    
+    
+    IF include_pictures THEN
+    	SELECT tp.picture_id, tp.picture_path, tp.caption_text, tp.cover_picture, tp.profile_picture, tp.create_date, tp.update_date, EXISTS(SELECT l.like_id FROM likes WHERE l.user_id = user_id) AS liked FROM vw_tweet_pictures tp
+        LEFT JOIN likes l
+    	ON l.picture_id = tp.picture_id
+        WHERE tp.tweet_id = tweet_id
+        LIMIT 0, p_limit;
+    END IF;
+    
+    IF include_comments THEN
+    	SELECT c.*, EXISTS(SELECT l.like_id FROM likes WHERE l.user_id = user_id) AS liked FROM vw_comments c
+        LEFT JOIN likes l
+    	ON l.picture_id = l.comment_id
+        WHERE c.tweet_id = tweet_id
+        LIMIT 0, p_limit;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_by_id` (IN `id` INT)   BEGIN
+	SELECT * FROM vw_user_profiles u
+    WHERE u.user_id = id
+    LIMIT 0, 1;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_comment` (IN `comment_text` VARCHAR(255), IN `user_id` INT, IN `tweet_id` INT)   BEGIN
@@ -295,6 +334,10 @@ ELSE
 END IF;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `user_exists_by_id` (IN `id` INT)   BEGIN
+	SELECT EXISTS(SELECT * FROM users u WHERE u.user_id = id) AS user_exists_by_id;
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -313,7 +356,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
   PRIMARY KEY (`comment_id`),
   KEY `user_id` (`user_id`),
   KEY `tweet_id` (`tweet_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -344,14 +387,16 @@ INSERT INTO `genders` (`gender_id`, `gender_name`, `pronoun_1`, `pronoun_2`) VAL
 
 CREATE TABLE IF NOT EXISTS `likes` (
   `like_id` int(11) NOT NULL AUTO_INCREMENT,
-  `create_date` date NOT NULL DEFAULT curdate(),
+  `create_date` datetime NOT NULL DEFAULT current_timestamp(),
   `user_id` int(11) NOT NULL,
   `tweet_id` int(11) DEFAULT NULL,
   `comment_id` int(11) DEFAULT NULL,
+  `picture_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`like_id`),
   KEY `user_id` (`user_id`),
   KEY `tweet_id` (`tweet_id`),
-  KEY `comment_id` (`comment_id`)
+  KEY `comment_id` (`comment_id`),
+  KEY `picture_id` (`picture_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -480,7 +525,7 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   PRIMARY KEY (`user_role_id`),
   KEY `user_id` (`user_id`),
   KEY `role_id` (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -516,6 +561,76 @@ CREATE TABLE IF NOT EXISTS `vw_tweets` (
 ,`last_name` varchar(255)
 ,`like_count` bigint(21)
 ,`comment_count` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `vw_tweet_pictures`
+-- (See below for the actual view)
+--
+CREATE TABLE IF NOT EXISTS `vw_tweet_pictures` (
+`picture_id` int(11)
+,`picture_path` varchar(500)
+,`caption_text` varchar(255)
+,`profile_picture` tinyint(1)
+,`cover_picture` tinyint(1)
+,`create_date` datetime
+,`update_date` datetime
+,`tweet_id` int(11)
+,`tweet_text` varchar(255)
+,`tweet_create_date` date
+,`tweet_update_date` date
+,`user_id` int(11)
+,`username` varchar(255)
+,`like_count` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `vw_user_pictures`
+-- (See below for the actual view)
+--
+CREATE TABLE IF NOT EXISTS `vw_user_pictures` (
+`picture_id` int(11)
+,`picture_path` varchar(500)
+,`caption_text` varchar(255)
+,`profile_picture` tinyint(1)
+,`cover_picture` tinyint(1)
+,`create_date` datetime
+,`update_date` datetime
+,`user_id` int(11)
+,`username` varchar(255)
+,`like_count` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `vw_user_profiles`
+-- (See below for the actual view)
+--
+CREATE TABLE IF NOT EXISTS `vw_user_profiles` (
+`user_id` int(11)
+,`username` varchar(255)
+,`first_name` varchar(255)
+,`last_name` varchar(255)
+,`email` varchar(255)
+,`phone_number` varchar(10)
+,`date_created` date
+,`profile_id` int(11)
+,`about_me` varchar(255)
+,`middle_name` varchar(255)
+,`birth_date` datetime
+,`gender_id` int(11)
+,`gender_name` varchar(255)
+,`pronoun_1` varchar(255)
+,`pronoun_2` varchar(255)
+,`cover_picture_id` int(11)
+,`cover_picture_path` varchar(500)
+,`proflie_picture_id` int(11)
+,`profile_picture_path` varchar(500)
 );
 
 -- --------------------------------------------------------
@@ -557,6 +672,33 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `vw_tweet_pictures`
+--
+DROP TABLE IF EXISTS `vw_tweet_pictures`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_tweet_pictures`  AS SELECT `p`.`picture_id` AS `picture_id`, `p`.`picture_path` AS `picture_path`, `p`.`caption_text` AS `caption_text`, `p`.`profile_picture` AS `profile_picture`, `p`.`cover_picture` AS `cover_picture`, `p`.`create_date` AS `create_date`, `p`.`update_date` AS `update_date`, `p`.`tweet_id` AS `tweet_id`, `t`.`tweet_text` AS `tweet_text`, `t`.`create_date` AS `tweet_create_date`, `t`.`update_date` AS `tweet_update_date`, `t`.`user_id` AS `user_id`, `u`.`username` AS `username`, count(`l`.`like_id`) AS `like_count` FROM (((`pictures` `p` join `tweets` `t` on(`p`.`tweet_id` = `t`.`tweet_id`)) join `users` `u` on(`t`.`user_id` = `u`.`user_id`)) left join `likes` `l` on(`l`.`picture_id` = `p`.`picture_id`)) GROUP BY 1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vw_user_pictures`
+--
+DROP TABLE IF EXISTS `vw_user_pictures`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_user_pictures`  AS SELECT `p`.`picture_id` AS `picture_id`, `p`.`picture_path` AS `picture_path`, `p`.`caption_text` AS `caption_text`, `p`.`profile_picture` AS `profile_picture`, `p`.`cover_picture` AS `cover_picture`, `p`.`create_date` AS `create_date`, `p`.`update_date` AS `update_date`, `p`.`user_id` AS `user_id`, `u`.`username` AS `username`, count(`l`.`like_id`) AS `like_count` FROM ((`pictures` `p` join `users` `u` on(`p`.`user_id` = `u`.`user_id`)) left join `likes` `l` on(`l`.`picture_id` = `p`.`picture_id`)) GROUP BY 1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vw_user_profiles`
+--
+DROP TABLE IF EXISTS `vw_user_profiles`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_user_profiles`  AS SELECT `u`.`user_id` AS `user_id`, `u`.`username` AS `username`, `u`.`first_name` AS `first_name`, `u`.`last_name` AS `last_name`, `u`.`email` AS `email`, `u`.`phone_number` AS `phone_number`, `u`.`date_created` AS `date_created`, `u`.`profile_id` AS `profile_id`, `p`.`about_me` AS `about_me`, `p`.`middle_name` AS `middle_name`, `p`.`birth_date` AS `birth_date`, `p`.`gender_id` AS `gender_id`, `g`.`gender_name` AS `gender_name`, `g`.`pronoun_1` AS `pronoun_1`, `g`.`pronoun_2` AS `pronoun_2`, `cover_pic`.`picture_id` AS `cover_picture_id`, `cover_pic`.`picture_path` AS `cover_picture_path`, `profile_pic`.`picture_id` AS `proflie_picture_id`, `profile_pic`.`picture_path` AS `profile_picture_path` FROM ((((`users` `u` join `profiles` `p` on(`u`.`profile_id` = `p`.`profile_id`)) left join `genders` `g` on(`p`.`gender_id` = `g`.`gender_id`)) left join `pictures` `cover_pic` on(`cover_pic`.`user_id` = `u`.`user_id` and `cover_pic`.`cover_picture` = 1)) left join `pictures` `profile_pic` on(`profile_pic`.`user_id` = `u`.`user_id` and `profile_pic`.`profile_picture` = 1)) GROUP BY 1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `vw_user_roles`
 --
 DROP TABLE IF EXISTS `vw_user_roles`;
@@ -580,7 +722,8 @@ ALTER TABLE `comments`
 ALTER TABLE `likes`
   ADD CONSTRAINT `likes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`tweet_id`) REFERENCES `tweets` (`tweet_id`),
-  ADD CONSTRAINT `likes_ibfk_3` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`);
+  ADD CONSTRAINT `likes_ibfk_3` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`),
+  ADD CONSTRAINT `likes_ibfk_4` FOREIGN KEY (`picture_id`) REFERENCES `pictures` (`picture_id`);
 
 --
 -- Constraints for table `pictures`
