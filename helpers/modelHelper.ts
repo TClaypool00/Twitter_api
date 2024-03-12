@@ -7,6 +7,8 @@ import pictureModel from "../models/interfaces/pictureModel";
 import Picture from "../models/Picture";
 import { getTweetPictureURL } from "./fileHelper";
 import commentModel from "../models/interfaces/commentModel";
+import apiUserModel from "../models/interfaces/apiUserModel";
+import mutliUserModel from "../models/interfaces/multiModels/multiUserModel";
 
 export function requiredIsNull(value : string | undefined | null) : boolean {
     return value === null || value === undefined || value === '';
@@ -20,15 +22,26 @@ export function valueExceedsLength(value: string, length: number) : boolean {
     return value.length > length;
 }
 
-export function userObject(user: User, token: string = '', refreshToken: string = '') : any {
+export function apiUserObject(user: User, token: string = '', refreshToken: string = '') : apiUserModel {
     return {
-        userId: user.userId,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phoneNum: user.phoneNumber,
+        userId: user.userId as number,
+        username: user.userName as string,
+        firstName: user.firstName as string,
+        lastName: user.lastName as string,
+        email: user.email as string,
+        phoneNumber: user.phoneNumber as string,
         token: token,
         refreshToken: refreshToken
+    }
+}
+
+export function multiUserObject(user: User): mutliUserModel {
+    return {
+        userId: user.userId as number,
+        username: user.userName as string,
+        firstName: user.firstName as string,
+        lastName: user.lastName as string,
+        profilePictureURL: user.profilePictureURL
     }
 }
 
