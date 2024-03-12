@@ -1,6 +1,7 @@
 import connect from '../database/database';
 import User from '../models/User';
 import { getJSONObject } from '../helpers/jsonHelper';
+import { maxLengthsObject } from '../helpers/valuesHelper';
 const connection = connect();
 
 //#region Database methods
@@ -42,10 +43,30 @@ export async function getUserByEmail(user: User) : Promise<User> {
     const [dataUser] = await connection.query('call get_single_user_by_email(?)', [user.email]);
     let jsonObject = getJSONObject(dataUser);
 
-    user.getUser(jsonObject);
+    user.setData(jsonObject);
 
 
     return user;
+}
+
+export async function getAllUsers(user:User): Promise<Array<User>> {
+    let users: Array<User> = new Array<User>();
+
+    const [dataUsers] = await connection.query('call get_all_users(?, ?, ?);', [user.search, user.index, maxLengthsObject.standardTakeValue]);
+    let jsonObject = getJSONObject(dataUsers);
+    jsonObject = jsonObject[0];
+
+    if (jsonObject.length > 0) {
+        for (let i = 0; i < jsonObject.length; i++) {
+            const userElement = jsonObject[i];
+            let newUser: User = new User();
+            newUser.setData(userElement);
+
+            users.push(newUser);
+        }
+    }
+
+    return users;
 }
 
 

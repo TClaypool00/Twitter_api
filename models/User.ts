@@ -1,8 +1,9 @@
 import { requiredIsNull, valueExceedsLength } from "../helpers/modelHelper";
 import * as emailValidator from 'email-validator';
 import { maxLengthsObject, passwordValuesObject, userValuesObject, errorsObject, requiredValue, maxLenghValue } from "../helpers/valuesHelper";
+import ModelHelper from "./ModelHelper";
 
-export default class User {
+export default class User extends ModelHelper {
     //#region Private Fields
     private useerNameField : string;
     private firstNameField : string;
@@ -15,7 +16,6 @@ export default class User {
     //#endregion
 
     //#region Public Fields
-    public userId : number = 0;
     public userName : string | undefined | null;
     public firstName : string | undefined | null;
     public lastName : string | undefined | null;
@@ -23,12 +23,14 @@ export default class User {
     public password : string | undefined | null;
     public confirmPassword: string | null | undefined;
     public phoneNumber : string | undefined | null;
-    public errors : [string] = [''];
     public roles: [string] = [''];
+    public profilePictureURL: string | null;
     //#endregion
 
     //#region  Constructor
     constructor() {
+        super();
+
         this.useerNameField = userValuesObject.usernameField;
         this.firstNameField = userValuesObject.firstNameField;
         this.lastNameField = userValuesObject.lastNameField;
@@ -37,6 +39,7 @@ export default class User {
         this.confirmPasswordField = userValuesObject.confirmPasswordField;
         this.phoneNumberField = userValuesObject.phoneNumberField;
         this.maxLength = maxLengthsObject.defaultStringMaxLength;
+        this.profilePictureURL = null;
 
         this.errors.splice(0, 1);
         this.roles.splice(0, 1);
@@ -66,20 +69,55 @@ export default class User {
         this.validateEmail();
     }
 
-    public getUser(data: any) : void {
-        let userData = data[0][0];
+    public setData(data: any) : void {
+        let userData: any;
+
+        try {
+            userData = data[0][0];
+        } catch {
+            userData = data;
+        }
+
         this.userId = userData.user_id;
         this.userName = userData.username;
         this.firstName = userData.first_name;
         this.lastName = userData.last_name;
-        this.email = userData.email;
-        this.phoneNumber = userData.phone_number;
-        this.password = userData.password;
+        if (userData.email) {
+            this.email = userData.email;
+        }
+
+        if (userData.phone_number) {
+            this.phoneNumber = userData.phone_number;
+        }
+
+        if (userData.password) {
+            this.password = userData.password;
+        }
+
+        if (userData.profile_picture_path) {
+            this.profilePictureURL = userData.profile_picture_path;
+        }
 
         let roleData = data[1];
-        for (let i = 0; i < roleData.length; i++) {
-            this.roles.push(roleData[i].role_name);
+        if (roleData) {
+            for (let i = 0; i < roleData.length; i++) {
+                this.roles.push(roleData[i].role_name);
+            }
         }
+    }
+
+    public getAll(req: any) {
+        if (typeof req.query.search !== 'undefined') {
+            this.search = String(req.query.search);
+
+            if (valueExceedsLength(this.search, maxLengthsObject.defaultStringMaxLength)) {
+                this.errors.push(maxLenghValue('search', maxLengthsObject.defaultStringMaxLength));
+            }
+        } else {
+            this.search = null;
+        }
+
+        this.setIndex(req.query);
     }
     //#endregion
 

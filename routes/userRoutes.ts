@@ -1,16 +1,21 @@
 import express from 'express';
-const router = express.Router();
 import User from '../models/User';
-import { insertUser, phoneNumberExists, emailExists, usernameExists, getUserByEmail } from '../data_access/userService';
+import { insertUser, phoneNumberExists, emailExists, usernameExists, getUserByEmail, getAllUsers } from '../data_access/userService';
 import { getError, getErrors, getStatus } from '../helpers/globalFunctions';
 import bcrypt from 'bcrypt';
 import { passwrdMeetsRequirements } from '../data_access/passwordService';
-import { passwordValuesObject, userValuesObject, errorsObject } from '../helpers/valuesHelper';
+import { passwordValuesObject, userValuesObject, errorsObject, jwtValuesObject } from '../helpers/valuesHelper';
 import * as  emailValidator from 'email-validator';
-import { userObject } from '../helpers/modelHelper';
-import { generateToken } from '../helpers/jwtHelper';
-const saltRounds = 10;
+import { apiUserObject, multiUserObject } from '../helpers/modelHelper';
+import { authenticateToken, generateToken } from '../helpers/jwtHelper';
+import { isAdmin } from '../helpers/rolesHelper';
+import userModel from '../models/interfaces/userModel';
+import mutliUserModel from '../models/interfaces/multiModels/multiUserModel';
+
 require('dotenv').config();
+
+const router = express.Router();
+const saltRounds: number = passwordValuesObject.saltRounds;
 
 router.post('/', async (req, resp) => {
     let user = new User();
@@ -114,10 +119,58 @@ router.post('/login', async (req, resp) => {
 
     user.password = '';
 
+    //TODO: Add refresh token logic
     const token = generateToken(user);
 
     resp.status(200)
-    .json(getStatus(userObject(user, token)));
+    .json(getStatus(apiUserObject(user, token)));
 });
+
+router.get('/', authenticateToken, async (req, resp) => {
+    // try {
+        
+
+    // } catch (error: any) {
+    //     resp.status(500)
+    //     .json(getStatus(error));
+    // }
+
+    let user: User = new User();
+        user.getAll(req);
+
+        if (user.errors.length > 0) {
+            resp.status(400)
+            .json(getStatus(user.errors));
+
+            return;
+        }
+
+        if (user.search === null && !isAdmin()) {
+            resp.status(400)
+            .json(getStatus(jwtValuesObject.unauthorizedMessage));
+
+            return;
+        }
+
+        let users = await getAllUsers(user);
+
+        if (users.length == 0) {
+            resp.status(404)
+            .json(getStatus(userValuesObject.getAllNotFoundMessage));
+
+            return;
+        }
+
+        let userModels = new Array<mutliUserModel>();
+
+        users.forEach(item => {
+            userModels.push(multiUserObject(item));
+        });
+
+        resp.status(200)
+        .json(getStatus(userModels));
+});
+
+//TODO: Create Delete user route
 
 export default router;
