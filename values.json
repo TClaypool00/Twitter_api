@@ -33,7 +33,8 @@
             "emailDoesNotExists" : "Eamil address does not exist",
             "phoneNumberExists": "Phone number already exists",
             "usernameExists": "Username already exists",
-            "cteatedError": "Could not complete registeration"
+            "cteatedError": "Could not complete registeration",
+            "getAllNotFound": "No users found"
         }
     },
     "tweet" : {
@@ -95,7 +96,8 @@
             "passwordsNotMatch" : "Passwords do not match",
             "invalidPassword" : "Password does not meet our requirements",
             "incorrectPasssword": "Incorrect password"
-        }
+        },
+        "saltRounds": 10
     },
     "jwt" : {
         "expireTimeLimit" : "1h",

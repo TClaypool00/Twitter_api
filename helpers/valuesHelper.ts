@@ -34,13 +34,15 @@ const userValuesObject = {
     phoneNumberExistsMessage: values.user.errors.phoneNumberExists,
     usernameExistsMessage: values.user.errors.usernameExists,
     emailDoesNotExistsMessage: values.user.errors.emailDoesNotExists,
-    created500ErrorMessage: values.user.errors.createdError
+    created500ErrorMessage: values.user.errors.createdError,
+    getAllNotFoundMessage: values.user.errors.getAllNotFound
 }
 
 const passwordValuesObject = {
     passwordsNotMatchMessage: values.password.errors.passwordsNotMatch,
     invalidPasswordMessage: values.password.errors.invalidPassword,
-    incorrectPassswordMessage: values.password.errors.incorrectPasssword
+    incorrectPassswordMessage: values.password.errors.incorrectPasssword,
+    saltRounds: Number(values.password.saltRounds)
 }
 
 const jwtValuesObject = {
