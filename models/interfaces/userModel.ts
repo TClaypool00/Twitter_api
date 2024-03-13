@@ -15,4 +15,5 @@ export default interface userModel extends mutliUserModel {
     coverPictureId: number | null;
     coverPicturePath: string | null;
     profilePictureId: number | null;
+    status: string
 }

@@ -29,6 +29,10 @@ const userValuesObject = {
     phoneNumberField: values.user.phoneNum,
     passwordField: values.user.password,
     confirmPasswordField: values.user.confirmPassword,
+    aboutMeField: values.user.aboutMe,
+    middleNameField: values.user.middleName,
+    birthDateField: values.user.birthDate,
+    genderIdField: values.user.genderId,
     createdOKMessage: values.user.okMessages.created,
     emailExistsMessage: values.user.errors.emailExists,
     phoneNumberExistsMessage: values.user.errors.phoneNumberExists,
@@ -36,7 +40,8 @@ const userValuesObject = {
     emailDoesNotExistsMessage: values.user.errors.emailDoesNotExists,
     created500ErrorMessage: values.user.errors.createdError,
     getAllNotFoundMessage: values.user.errors.getAllNotFound,
-    notFoundMessage: values.user.errors.notFound
+    notFoundMessage: values.user.errors.notFound,
+    updatedOKMessage: values.user.okMessages.updated
 }
 
 const passwordValuesObject = {

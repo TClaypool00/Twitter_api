@@ -43,6 +43,14 @@ export function getTweetPictureURL(userId: number, file: string, tweetId: number
     return path;
 }
 
+export function getUserPictureURL(userId: number, filePath: string | null) : string | null {
+    if (filePath === null) {
+        return null;
+    } else {
+        return getTweetPictureURL(userId, filePath);
+    }
+}
+
 const storageObject : multer.StorageEngine = multer.diskStorage({
     destination: (req, file, callback) => {
         let userId: number = req.body.userId;

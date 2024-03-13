@@ -1,13 +1,13 @@
 import express from 'express';
 import User from '../models/User';
-import { insertUser, phoneNumberExists, emailExists, usernameExists, getUserByEmail, getAllUsers, userExistsById, getUserById } from '../data_access/userService';
+import { insertUser, phoneNumberExists, emailExists, usernameExists, getUserByEmail, getAllUsers, userExistsById, getUserById, updateUser } from '../data_access/userService';
 import { getError, getErrors, getStatus } from '../helpers/globalFunctions';
 import bcrypt from 'bcrypt';
 import { passwrdMeetsRequirements } from '../data_access/passwordService';
 import { passwordValuesObject, userValuesObject, errorsObject, jwtValuesObject } from '../helpers/valuesHelper';
 import * as  emailValidator from 'email-validator';
 import { apiUserObject, multiUserObject, userObject } from '../helpers/modelHelper';
-import { authenticateToken, generateToken } from '../helpers/jwtHelper';
+import { authenticateToken, generateToken, validateUserId } from '../helpers/jwtHelper';
 import { isAdmin } from '../helpers/rolesHelper';
 import userModel from '../models/interfaces/userModel';
 import mutliUserModel from '../models/interfaces/multiModels/multiUserModel';
@@ -180,13 +180,6 @@ router.get('/:id', authenticateToken, async (req, resp) => {
             return;
         }
 
-        if (!await userExistsById(user)) {
-            resp.status(404)
-            .json(getStatus(userValuesObject.notFoundMessage));
-
-            return;
-        }
-
         user = await getUserById(user);
 
         resp.status(200)
@@ -195,7 +188,69 @@ router.get('/:id', authenticateToken, async (req, resp) => {
         resp.status(500)
         .json(getStatus(error));
     }
-})
+});
+
+router.put('/:id', authenticateToken, async(req, resp) => {
+    let user: User = new User();
+        user.update(req.body, req.params.id);
+
+        if (user.errors.length > 0) {
+            resp.status(400)
+            .json(getStatus(user.errors));
+
+            return;
+        }
+
+        if (!validateUserId(Number(user.userId)) && !isAdmin()) {
+            resp.status(403)
+            .json(getStatus(jwtValuesObject.unauthorizedMessage));
+
+            return;
+        }
+        
+        if (!await userExistsById(user)) {
+            resp.status(404)
+            .json(getStatus(userValuesObject.notFoundMessage));
+
+            return;
+        }
+
+        if (await usernameExists(String(user.userName), user.userId)) {
+            resp.status(400)
+            .json(getError(userValuesObject.usernameExistsMessage));
+
+            return;
+        }
+
+        
+
+        if (await phoneNumberExists(String(user.phoneNumber), user.userId)) {
+            resp.status(400)
+            .json(userValuesObject.phoneNumberExistsMessage);
+
+            return;
+        }
+
+        if (await emailExists(String(user.email), user.userId)) {
+            resp.status(400)
+            .json(userValuesObject.emailExistsMessage);
+
+            return;
+        }
+
+        user = await updateUser(user);
+        
+        resp.status(200)
+        .json(getStatus(userObject(user, userValuesObject.updatedOKMessage)));
+    
+    // try {
+        
+
+    // } catch (error: any) {
+    //     resp.status(500)
+    //     .json(getStatus(error));
+    // }
+});
 
 //TODO: Create Delete user route
 

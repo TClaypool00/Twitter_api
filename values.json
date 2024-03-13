@@ -25,8 +25,13 @@
         "password" : "Password",
         "phoneNum" : "Phone number",
         "confirmPassword" : "Confirm password",
+        "aboutMe": "About me",
+        "middleName": "Middle name",
+        "birtDate": "Birth date",
+        "genderId": "Gender id",
         "okMessages" : {
-            "created": "user has been created!"
+            "created": "user has been created!",
+            "updated": "User has been updated!"
         },
         "errors" : {
             "emailExists": "Email address already exists",

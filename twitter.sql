@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2024 at 06:30 AM
+-- Generation Time: Mar 13, 2024 at 01:03 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -93,7 +93,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `email_existts` (IN `email` VARCHAR(
 IF user_id IS NULL THEN
 	SELECT EXISTS(SELECT * FROM users u WHERE u.email = email) AS email_exists;
 ELSE
-	SELECT EXISTS(SELECT * FROM users u WHERE u.email = email AND u.user_id = user_id) AS email_exists;
+	SELECT EXISTS(SELECT * FROM users u WHERE u.email = email AND u.user_id != user_id) AS email_exists;
 END IF;
 END$$
 
@@ -265,7 +265,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `phone_number_exists` (IN `phone_num
 IF user_id IS NULL THEN
 	SELECT EXISTS(SELECT * FROM users u WHERE u.phone_number = phone_number) AS phone_number_exists;
 ELSE
-	SELECT EXISTS(SELECT * FROM users u WHERE u.phone_number = phone_number AND u.user_id = user_id) AS phone_number_exists;
+	SELECT EXISTS(SELECT * FROM users u WHERE u.phone_number = phone_number AND u.user_id != user_id) AS phone_number_exists;
 END IF;
 END$$
 
@@ -326,11 +326,38 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `update_tweet` (IN `tweet_id` INT, I
     WHERE t.tweet_id = tweet_id;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_user` (IN `u_id` INT, IN `u_name` VARCHAR(255), IN `f_name` VARCHAR(255), IN `l_name` VARCHAR(255), IN `e_mail` VARCHAR(255), IN `p_number` VARCHAR(10), IN `m_name` VARCHAR(255), IN `a_me` VARCHAR(255), IN `b_date` DATE, IN `g_id` INT)   BEGIN
+	DECLARE p_id INT DEFAULT 0;
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    	SHOW ERRORS;
+    	ROLLBACK;
+        SELECT g_id;
+    END;
+    
+    START TRANSACTION;
+    
+    SET p_id = (SELECT u.profile_id FROM vw_user_profiles u WHERE u.user_id = u_id);
+    
+    UPDATE users
+    SET first_name = f_name, username = u_name, last_name = l_name, email = e_mail, phone_number = p_number
+    WHERE user_id = u_id;
+    
+    UPDATE profiles
+    SET about_me = a_me, birth_date = b_date, gender_id = g_id
+    WHERE profile_id = p_id;
+    
+    SELECT u.date_created, u.profile_id, u.cover_picture_id, u.cover_picture_path, u.proflie_picture_id, u.profile_picture_path, u.gender_name, u.pronoun_1, u.pronoun_2 FROM vw_user_profiles u
+    WHERE u.user_id = u_id;
+    
+    COMMIT;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `username_exists` (IN `username` VARCHAR(255), IN `user_id` INT)   BEGIN
 IF user_id IS NULL THEN
 	SELECT EXISTS(SELECT * FROM users u WHERE u.username = username) AS username_exists;
 ELSE
-	SELECT EXISTS(SELECT * FROM users u WHERE u.username = username AND u.user_id = user_id) AS username_exists;
+	SELECT EXISTS(SELECT * FROM users u WHERE u.username = username AND u.user_id != user_id) AS username_exists;
 END IF;
 END$$
 

@@ -86,3 +86,13 @@ export async function getUserById(user:User): Promise<User> {
 
     return user;
 }
+
+export async function updateUser(user:User): Promise<User> {
+    const [dataUser] = await connection.query('call update_user(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);', [user.userId, user.userName, user.firstName, user.lastName, user.email, user.phoneNumber, user.middleName, user.aboutMe, user.birthDate, user.genderId]);
+    let jsonObject = getJSONObject(dataUser);
+    jsonObject = jsonObject[0][0];
+    
+    user.setUpdateData(jsonObject);
+
+    return user;
+}

@@ -1,4 +1,4 @@
-import { requiredIsNull, valueExceedsLength } from "../helpers/modelHelper";
+import { requiredDateIsNull, requiredIsNull, requiredNumberIsNull, valueExceedsLength } from "../helpers/modelHelper";
 import * as emailValidator from 'email-validator';
 import { maxLengthsObject, passwordValuesObject, userValuesObject, errorsObject, requiredValue, maxLenghValue } from "../helpers/valuesHelper";
 import ModelHelper from "./ModelHelper";
@@ -27,12 +27,12 @@ export default class User extends ModelHelper {
     public phoneNumber : string | undefined | null;
     public roles: [string] = [''];
     public profilePictureURL: string | null;
-    public profileId: number;
-    public aboutMe: string | null;
-    public middleName: string | null;
-    public birthDate: Date | null;
-    public genderId: number | null;
-    public genderName: string | null;
+    public profileId: number | undefined | null;
+    public aboutMe: string | undefined | null;
+    public middleName: string | undefined | null;
+    public birthDate: Date | undefined | null;
+    public genderId: number | undefined | null;
+    public genderName: string | undefined | null;
     public pronoun1: string | null;
     public pronoun2: string | null;
     public coverPictureId: number | null;
@@ -74,17 +74,20 @@ export default class User extends ModelHelper {
     //#endregion
 
     //#region Public Methods
-    public register(request : any) : void {
-        this.userName = request.userName;
-        this.firstName = request.firstName;
-        this.lastName = request.lastName;
-        this.email = request.email;
-        this.password = request.passowrd;
-        this.phoneNumber = request.phoneNumber;
-        this.confirmPassword = request.confirmPassword;
+    public register(reqBody : any, update: boolean = false) : void {
+        this.userName = reqBody.userName;
+        this.firstName = reqBody.firstName;
+        this.lastName = reqBody.lastName;
+        this.email = reqBody.email;
+        this.phoneNumber = reqBody.phoneNumber;
+        
+        if (!update) {
+            this.confirmPassword = reqBody.confirmPassword;
+            this.password = reqBody.passowrd;
+            this.passwordMatches();
+        }
 
         this.validate();
-        this.passwordMatches();
         this.validateEmail();
     }
 
@@ -94,6 +97,25 @@ export default class User extends ModelHelper {
         }
 
         this.validateEmail();
+    }
+
+    public update(reqBody: any, id: any) {
+        this.userId = id;
+        this.aboutMe = reqBody.aboutMe;
+        this.middleName = reqBody.middleName;
+        this.genderId = reqBody.genderId;
+
+        this.userId = this.validateId(this.userId, this.userIdField, true);
+
+        this.register(reqBody, true);
+
+        if (typeof this.aboutMe === 'string' && valueExceedsLength(this.aboutMe, this.maxLength)) {
+            this.errors.push(maxLenghValue(userValuesObject.aboutMeField, this.maxLength));
+        }
+
+        if (typeof this.middleName === 'string' && valueExceedsLength(this.middleName, this.maxLength)) {
+            this.errors.push(maxLenghValue(userValuesObject.middleNameField, this.maxLength));
+        }
     }
 
     public setData(data: any) : void {
@@ -196,6 +218,50 @@ export default class User extends ModelHelper {
                 this.roles.push(roleData[i].role_name);
             }
         }
+    }
+
+    public setUpdateData(data: any): void {
+        if (data) {
+            this.genderId = data.gender_id;
+            this.genderName = data.gender_name;
+            this.pronoun1 = data.pronoun_1;
+            this.pronoun2 = data.pronoun_2;
+            
+            if (data.date_created) {
+                this.setCreateDate(data.date_created);
+            }
+
+            if (data.profile_id) {
+                this.profileId = data.profile_id;
+            }
+
+            if (data.cover_picture_id) {
+                this.coverPictureId = data.cover_picture_id;
+            }
+
+            if (data.cover_picture_path) {
+                this.coverPicturePath = data.cover_picture_path;
+            }
+
+            if (data.profile_picture_id) {
+                this.profliePictureId = data.profile_picture_id;
+            }
+
+            if (data.profile_picture_path) {
+                this.profilePicturePath = data.profile_picture_path;
+            }
+
+            if (data.birth_date) {
+                this.birthDate = new Date(String(data.birth_date));
+            }
+        }
+
+        let createDate: any;
+        if (createDate) {
+            createDate = data[1].date_created;
+            this.setCreateDate(createDate);
+        }
+
     }
 
     public getAll(req: any) {
