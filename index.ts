@@ -22,7 +22,9 @@ app.use('/tweets', tweetRoutes);
 app.use('/likes', likeRoutes);
 app.use('/comments', commentRoutes);
 app.use('/roles', rolesRoutes);
-app.use('/pictures', pictureRoutes);
+app.use('/pictures', pictureRoutes); //TODO: Finish pictures
+//TODO: Add genders and DM routes
+//TODO: Add user can create their own gender logic
 
 app.listen(port, () => {
     console.log(routerValuesObject.defaultMessage);

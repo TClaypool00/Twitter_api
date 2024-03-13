@@ -191,7 +191,8 @@ router.get('/:id', authenticateToken, async (req, resp) => {
 });
 
 router.put('/:id', authenticateToken, async(req, resp) => {
-    let user: User = new User();
+    try {
+        let user: User = new User();
         user.update(req.body, req.params.id);
 
         if (user.errors.length > 0) {
@@ -242,16 +243,14 @@ router.put('/:id', authenticateToken, async(req, resp) => {
         
         resp.status(200)
         .json(getStatus(userObject(user, userValuesObject.updatedOKMessage)));
-    
-    // try {
-        
 
-    // } catch (error: any) {
-    //     resp.status(500)
-    //     .json(getStatus(error));
-    // }
+    } catch (error: any) {
+        resp.status(500)
+        .json(getStatus(error));
+    }
 });
 
 //TODO: Create Delete user route
+//TOD: Create Change password route
 
 export default router;
